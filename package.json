@@ -1,0 +1,17 @@
+{
+  "name": "bubble-tools",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "bip32": "^2.0.6",
+    "crypto": "^1.0.1",
+    "datona-lib": "^0.1.4",
+    "ethereumjs-tx": "2.1.2",
+    "fs": "^0.0.1-security",
+    "mime-types": "^2.1.35",
+    "net": "^1.0.2",
+    "stream": "^0.0.2"
+  },
+  "scripts": {
+  }
+}
