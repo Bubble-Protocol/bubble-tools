@@ -205,7 +205,13 @@ const addressBook = {
 
 // VAULTS
 
-function readVault(server, contract, filename, file, data) {
+function createVault(server, contract) {
+  const params = validateVault(server, contract);
+  console.trace('createVault', JSON.stringify(params.server), params.contract);
+  return params.vault.create();
+}
+
+function readVault(server, contract, filename) {
   const params = validateVaultParams(server, contract, filename);
   console.trace('readVault', JSON.stringify(params.server), params.contract, params.filename);
   return params.vault.read(params.filename);
@@ -223,17 +229,22 @@ function writeVault(server, contract, filename, file, data) {
   return params.vault.write(data, params.filename);
 }
 
-function validateVaultParams(serverStr, contractStr, filenameStr) {
+function validateVault(serverStr, contractStr) {
   const server = parseServer(serverStr);
   const contract = parseAddress(contractStr);
-  const filename = parseAddress(filenameStr, true);
   if (!server) throw new Error('invalid server url');
   if (!contract) throw new Error('invalid contract address');
-  if (!filename) throw new Error('invalid filename - should be an address');
   const key = getApplicationKey();
   if (!key) throw new Error('you must connect to your bubble or manually add a key');
   const vault = new datona.vault.RemoteVault(StringUtils.stringToUrl(server.url), contract, key, server.id);
-  return {server: server, contract: contract, filename: filename, key: key, vault: vault}
+  return {server: server, contract: contract, key: key, vault: vault}
+}
+
+function validateVaultParams(serverStr, contractStr, filenameStr) {
+  const params = validateVault(serverStr, contractStr);
+  params.filename = parseAddress(filenameStr, true);
+  if (!params.filename) throw new Error('invalid filename - should be an address');
+  return params;
 }
 
 function parseServer(serverStr) {
@@ -287,6 +298,7 @@ function parseAddress(addressStr, multipath=false) {
 }
 
 const vault = {
+  createVault: createVault,
   readVault: readVault,
   writeVault: writeVault
 }

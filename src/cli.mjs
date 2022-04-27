@@ -211,9 +211,22 @@ program
 		catch(error) { exitWithError(error) }
 	});
 
+// CREATEVAULT Command
+program
+	.command('vault.create <server> <contract>')
+	.description("creates a vault on the given vault server controlled by the given smart data access contract.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract can be an address book label or an Ethereum address." )
+	.action(function(server, contract){
+		try{
+			tools.vault.createVault(server, contract)
+				.then(console.log)
+				.catch(exitWithError);
+		}
+		catch(error) { exitWithError(error) }
+	});
+
 // READVAULT Command
 program
-	.command('readVault <server> <contract> <filename>')
+	.command('vault.read <server> <contract> <filename>')
 	.description("reads the given vault file and dumps the content to the console.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
 	.action(function(server, contract, filename){
 		try{
@@ -226,7 +239,7 @@ program
 
 // WRITEVAULT Command
 program
-	.command('writeVault <server> <contract> <filename> [file]')
+	.command('vault.write <server> <contract> <filename> [file]')
 	.description("writes the given file (or data if using the --data option) to the given vault and filename.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
 	.option('--data <string>', 'string data to write instead of a file')
 	.action(function(server, contract, filename, file, options){
