@@ -14,6 +14,7 @@ import ImageUtils from './utils/image-utils.mjs';
 import StringUtils from './utils/string-utils.mjs';
 
 import './utils/log.js';
+import { generateMintInvitation } from './utils/nft-tools.mjs';
 
 // Constants
 const program = new Commander.Command("bubble");
@@ -247,6 +248,79 @@ program
 			tools.vault.writeVault(server, contract, filename, file, options.data)
 				.then(console.log)
 				.catch(exitWithError);
+		}
+		catch(error) { exitWithError(error) }
+	});
+
+// GENERATEMINTINVITATION Command
+program
+	.command('nft.mint-invite <contract> <series> <tokenId>')
+	.description("generates an mintWithInvite packet for the Bubble NFT contract" )
+	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
+	.option('-e, --expiry <expiryTime>', 'expiry duration in the form 12h (12 hours) or 7d (7days)')
+	.action(function(contract, series, tokenId, options={}){
+		try{
+			console.log(generateMintInvitation(contract, series, tokenId, options));
+		}
+		catch(error) { exitWithError(error) }
+	});
+
+// GETKEY Command
+program
+	.command('wallet.list [label]')
+	.description("lists the keys in your wallet and displays their public addresses" )
+	.option('-p, --public-key', "display public key")
+	.action(function(label, options){
+		try{
+			tools.wallet.listKeys(label, options.publicKey).forEach(key => {
+				const publicKey = options.publicKey ? '\t'+key.publicKey : '';
+				console.log(key.name+'\t'+key.address+publicKey);
+			})
+		}
+		catch(error) { exitWithError(error) }
+	});
+
+// CREATEKEY Command
+program
+	.command('wallet.create <label> [privateKey]')
+	.description("create a new private key with the given name.  If privateKey is not given then a new random key is created." )
+	.action(function(label, privateKey){
+		try{
+			if (privateKey) tools.wallet.addApplicationKey(label, privateKey);
+			else tools.wallet.createApplicationKey(label);
+		}
+		catch(error) { exitWithError(error) }
+	});
+
+// REMOVEKEY Command
+program
+	.command('wallet.remove <label>')
+	.description("remove the private key with the given name" )
+	.action(function(label){
+		try{
+			tools.wallet.removeApplicationKey(label);
+		}
+		catch(error) { exitWithError(error) }
+	});
+
+// SETDEFAULTKEY Command
+program
+	.command('wallet.setDefault <label>')
+	.description("set the default key to the given wallet key" )
+	.action(function(label){
+		try{
+			tools.wallet.setDefaultKey(label);
+		}
+		catch(error) { exitWithError(error) }
+	});
+
+// RESETDEFAULTKEY Command
+program
+	.command('wallet.resetDefault')
+	.description("resets the default key to the initial application key created on install" )
+	.action(function(){
+		try{
+			tools.wallet.resetDefaultKey();
 		}
 		catch(error) { exitWithError(error) }
 	});

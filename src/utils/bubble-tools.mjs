@@ -3,7 +3,7 @@ import StringUtils from "./string-utils.mjs";
 import fs from 'fs';
 import { homedir } from "os";
 
-import { BubbleDIDURL, createBubbleUrlStr, createDID } from "./bubble-utils.mjs";
+import { BubbleDIDURL, createBubbleUrlStr, createDID, isBubbleDID } from "./bubble-utils.mjs";
 
 export function didToAddress(did) {
   const didUrl = new BubbleDIDURL(did);
@@ -57,40 +57,76 @@ function getApplicationKey(label='default-key') {
 		return new datona.crypto.Key(privateKey);
 	}
 	catch(error) {
-		console.error(error);
+    console.error(error);
 	}
 }
 
-function createApplicationKey(label='default-key') {
+function createApplicationKey(label) {
 	const key = datona.crypto.generateKey();
   const success = setApplicationKey(datona.crypto.uint8ArrayToHex(key.privateKey), label);
   return success ? key : undefined;
 }
 
 function setApplicationKey(privateKey, label='default-key', force=false) {
-	try {
-    if (!fs.existsSync(homedir()+'/.bubble-tools/wallet')) fs.mkdirSync(homedir()+'/.bubble-tools/wallet', {recursive: true});
-		if (!force && hasApplicationKey(label)) {
-      throw new Error("application key '"+label+"' already exists");
-    };
-		fs.writeFileSync(homedir()+'/.bubble-tools/wallet/'+label, privateKey);
-    return true;
-	}
-	catch(error) {
-		console.error(error);
-    return false;
-	}
+  if (!fs.existsSync(homedir()+'/.bubble-tools/wallet')) fs.mkdirSync(homedir()+'/.bubble-tools/wallet', {recursive: true});
+  if (!force && hasApplicationKey(label)) {
+    throw new Error("application key '"+label+"' already exists");
+  };
+  fs.writeFileSync(homedir()+'/.bubble-tools/wallet/'+label, privateKey);
+  if (label === 'default-key') fs.writeFileSync(homedir()+'/.bubble-tools/wallet/initial-application-key', privateKey);
+  return true;
+}
+
+function addApplicationKey(label, privateKey) {
+  datona.assertions.isPrivateKey(privateKey, "private key");
+  datona.assertions.isString(label, "label");
+  return setApplicationKey(privateKey, label);
+}
+
+function removeApplicationKey(label) {
+  datona.assertions.isString(label, "label");
+  label = label.toLowerCase();
+  if (label === 'default-key') throw new Error('cannot delete the default-key.  Use wallet.setDefault instead');
+  if (label === 'initial-application-key') throw new Error('cannot delete the initial-application-key - it connects this installation to your Bubble');
+  if (!fs.existsSync(homedir()+'/.bubble-tools/wallet/'+label)) throw new Error('key does not exist');
+  fs.unlinkSync(homedir()+'/.bubble-tools/wallet/'+label);
+}
+
+function setDefaultKey(label='initial-application-key') {
+  label = label.toLowerCase();
+  if (!fs.existsSync(homedir()+'/.bubble-tools/wallet/'+label)) throw new Error('key does not exist');
+  fs.copyFileSync(homedir()+'/.bubble-tools/wallet/'+label, homedir()+'/.bubble-tools/wallet/default-key');
+}
+
+function resetDefaultKey() {
+  setDefaultKey();
 }
 
 function hasApplicationKey(label='default-key') {
   return fs.existsSync(homedir()+'/.bubble-tools/wallet/'+label);
 }
 
+function listKeys(label) {
+  if (!fs.existsSync(homedir()+'/.bubble-tools/wallet')) return [];
+  let keyNames = fs.readdirSync(homedir()+'/.bubble-tools/wallet');
+  if (label) keyNames = keyNames.filter(k => { return k === label })
+  return keyNames.map(k => {
+    const key = getApplicationKey(k);
+    if (key) return {name: k, address: key.address, publicKey: '0x'+datona.crypto.uint8ArrayToHex(key.publicKey)}
+    else return {name: k, address: 'error!', publicKey: ''}
+  })
+}
+
 export const wallet = {
   getApplicationKey: getApplicationKey,
+  addApplicationKey: addApplicationKey,
   createApplicationKey: createApplicationKey,
+  removeApplicationKey: removeApplicationKey,
   setApplicationKey: setApplicationKey,
-  hasApplicationKey: hasApplicationKey
+  hasApplicationKey: hasApplicationKey,
+  listKeys: listKeys,
+  setDefaultKey: setDefaultKey,
+  resetDefaultKey: resetDefaultKey
 }
 
 
@@ -172,6 +208,7 @@ function getAddressBook() {
 
 function addAddress(label, address, memo) {
   datona.assertions.isString(label, "label");
+  if (isBubbleDID(address)) address = new BubbleDIDURL(address).address;
   datona.assertions.isAddress(address, "address");
   const addresses = getAddressBook();
   label = label.toLowerCase();
@@ -196,10 +233,11 @@ function writeAddressBook(addresses) {
   localAddressBook = addresses;
 }
 
-const addressBook = {
+export const addressBook = {
   getAddressBook: getAddressBook,
   addAddress: addAddress,
-  removeAddress: removeAddress
+  removeAddress: removeAddress,
+  parseAddress: parseAddress
 }
 
 
@@ -235,7 +273,6 @@ function validateVault(serverStr, contractStr) {
   if (!server) throw new Error('invalid server url');
   if (!contract) throw new Error('invalid contract address');
   const key = getApplicationKey();
-  if (!key) throw new Error('you must connect to your bubble or manually add a key');
   const vault = new datona.vault.RemoteVault(StringUtils.stringToUrl(server.url), contract, key, server.id);
   return {server: server, contract: contract, key: key, vault: vault}
 }
@@ -297,10 +334,14 @@ function parseAddress(addressStr, multipath=false) {
   return address;
 }
 
-const vault = {
+export const vaultTools = {
+  getServers: getServers,
   createVault: createVault,
   readVault: readVault,
-  writeVault: writeVault
+  writeVault: writeVault,
+  validateVault: validateVault,
+  validateVaultParams: validateVaultParams,
+  parseServer: parseServer
 }
 
 
@@ -310,7 +351,7 @@ const tools = {
   wallet: wallet,
   addressBook: addressBook,
   vaultServerConfig: vaultServerConfig,
-  vault: vault,
+  vault: vaultTools,
   didToAddress: didToAddress,
   addressToDid: addressToDid,
   createBubbleUrl: createBubbleUrl,
