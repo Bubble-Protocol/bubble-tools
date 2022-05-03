@@ -243,42 +243,56 @@ export const addressBook = {
 
 // VAULTS
 
-function createVault(server, contract) {
-  const params = validateVault(server, contract);
-  console.trace('createVault', JSON.stringify(params.server), params.contract);
+function createVault(server, contract, options) {
+  const params = validateVault(server, contract, options);
+  console.trace('createVault', JSON.stringify(params.server), params.contract, options);
   return params.vault.create();
 }
 
-function readVault(server, contract, filename) {
-  const params = validateVaultParams(server, contract, filename);
-  console.trace('readVault', JSON.stringify(params.server), params.contract, params.filename);
+function deleteVault(server, contract, options) {
+  const params = validateVault(server, contract, options);
+  console.trace('deleteVault', JSON.stringify(params.server), params.contract, options);
+  return params.vault.delete();
+}
+
+function readVault(server, contract, filename, options) {
+  const params = validateVaultParams(server, contract, filename, options);
+  console.trace('readVault', JSON.stringify(params.server), params.contract, params.filename, options);
   return params.vault.read(params.filename);
 }
 
-function writeVault(server, contract, filename, file, data) {
-  const params = validateVaultParams(server, contract, filename);
+function writeVault(server, contract, filename, file, options={}) {
+  const params = validateVaultParams(server, contract, filename, options);
+  let data = options.data;
   if (file && data) throw new Error('cannot write both file and data');
   if (!file && !data) throw new Error('missing file or data string');
   if (file) {
     if (!fs.existsSync(file)) throw new Error('file does not exist');
     data = fs.readFileSync(file).toString();
   }
-  console.trace('writeVault', JSON.stringify(params.server), params.contract, params.filename);
+  console.trace('writeVault', JSON.stringify(params.server), params.contract, params.filename, options);
   return params.vault.write(data, params.filename);
 }
 
-function validateVault(serverStr, contractStr) {
+function deleteVaultFile(server, contract, filename, options={}) {
+  const params = validateVaultParams(server, contract, filename, options);
+  console.trace('deleteVaultFile', JSON.stringify(params.server), params.contract, params.filename, options);
+  return params.vault.write("!!bubble-delete!!", params.filename);
+}
+
+function validateVault(serverStr, contractStr, options={}) {
   const server = parseServer(serverStr);
   const contract = parseAddress(contractStr);
   if (!server) throw new Error('invalid server url');
   if (!contract) throw new Error('invalid contract address');
-  const key = getApplicationKey();
+  const key = wallet.getApplicationKey(options.key);
+  if (!key) throw new Error('you must connect to your bubble or manually add a key');
   const vault = new datona.vault.RemoteVault(StringUtils.stringToUrl(server.url), contract, key, server.id);
   return {server: server, contract: contract, key: key, vault: vault}
 }
 
-function validateVaultParams(serverStr, contractStr, filenameStr) {
-  const params = validateVault(serverStr, contractStr);
+function validateVaultParams(serverStr, contractStr, filenameStr, options) {
+  const params = validateVault(serverStr, contractStr, options);
   params.filename = parseAddress(filenameStr, true);
   if (!params.filename) throw new Error('invalid filename - should be an address');
   return params;
@@ -337,8 +351,10 @@ function parseAddress(addressStr, multipath=false) {
 export const vaultTools = {
   getServers: getServers,
   createVault: createVault,
+  deleteVault: deleteVault,
   readVault: readVault,
   writeVault: writeVault,
+  deleteVaultFile: deleteVaultFile,
   validateVault: validateVault,
   validateVaultParams: validateVaultParams,
   parseServer: parseServer

@@ -216,9 +216,24 @@ program
 program
 	.command('vault.create <server> <contract>')
 	.description("creates a vault on the given vault server controlled by the given smart data access contract.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract can be an address book label or an Ethereum address." )
-	.action(function(server, contract){
+	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
+	.action(function(server, contract, options){
 		try{
-			tools.vault.createVault(server, contract)
+			tools.vault.createVault(server, contract, options)
+				.then(console.log)
+				.catch(exitWithError);
+		}
+		catch(error) { exitWithError(error) }
+	});
+
+// DELETEVAULT Command
+program
+	.command('vault.deleteVault <server> <contract>')
+	.description("deletes the given vault server controlled by the given smart data access contract.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract can be an address book label or an Ethereum address." )
+	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
+	.action(function(server, contract, options){
+		try{
+			tools.vault.deleteVault(server, contract, options)
 				.then(console.log)
 				.catch(exitWithError);
 		}
@@ -229,9 +244,10 @@ program
 program
 	.command('vault.read <server> <contract> <filename>')
 	.description("reads the given vault file and dumps the content to the console.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
-	.action(function(server, contract, filename){
+	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
+	.action(function(server, contract, filename, options){
 		try{
-			tools.vault.readVault(server, contract, filename)
+			tools.vault.readVault(server, contract, filename, options)
 				.then(console.log)
 				.catch(exitWithError);
 		}
@@ -243,9 +259,24 @@ program
 	.command('vault.write <server> <contract> <filename> [file]')
 	.description("writes the given file (or data if using the --data option) to the given vault and filename.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
 	.option('--data <string>', 'string data to write instead of a file')
+	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
 	.action(function(server, contract, filename, file, options){
 		try{
-			tools.vault.writeVault(server, contract, filename, file, options.data)
+			tools.vault.writeVault(server, contract, filename, file, options)
+				.then(console.log)
+				.catch(exitWithError);
+		}
+		catch(error) { exitWithError(error) }
+	});
+
+// DELETEVAULTFILE Command
+program
+	.command('vault.delete <server> <contract> <filename>')
+	.description("deletes the given file with the given vault and filename.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
+	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
+	.action(function(server, contract, filename, file, options){
+		try{
+			tools.vault.deleteVaultFile(server, contract, filename, options)
 				.then(console.log)
 				.catch(exitWithError);
 		}
