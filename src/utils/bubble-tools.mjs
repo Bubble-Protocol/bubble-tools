@@ -5,6 +5,13 @@ import { homedir } from "os";
 
 import { BubbleDIDURL, createBubbleUrlStr, createDID, isBubbleDID } from "./bubble-utils.mjs";
 
+const APP_DIR = homedir()+'/.bubble-tools';
+const WALLET_DIR = APP_DIR+'/wallet';
+const SERVERS_FILE = APP_DIR+'/servers';
+const ADDRESSES_FILE = APP_DIR+'/addresses';
+
+// DID TOOLS
+
 export function didToAddress(did) {
   const didUrl = new BubbleDIDURL(did);
   return didUrl.address;
@@ -50,10 +57,17 @@ export function toChecksumAddress (address) {
 
 // WALLET
 
+function checkApplicationDir() {
+  if (!fs.existsSync(APP_DIR)) {
+    fs.mkdirSync(APP_DIR, {recursive: true});
+    fs.chmodSync(APP_DIR, 0o700);
+  }
+}
+
 function getApplicationKey(label='default-key') {
 	try {
-    if (!fs.existsSync(homedir()+'/.bubble-tools/wallet/default-key')) throw new Error('key does not exist');
-		const privateKey = fs.readFileSync(homedir()+'/.bubble-tools/wallet/'+label, {encoding: 'utf8'});
+    if (!fs.existsSync(WALLET_DIR+'/default-key')) throw new Error('key does not exist');
+		const privateKey = fs.readFileSync(WALLET_DIR+'/'+label, {encoding: 'utf8'});
 		return new datona.crypto.Key(privateKey);
 	}
 	catch(error) {
@@ -68,12 +82,13 @@ function createApplicationKey(label) {
 }
 
 function setApplicationKey(privateKey, label='default-key', force=false) {
-  if (!fs.existsSync(homedir()+'/.bubble-tools/wallet')) fs.mkdirSync(homedir()+'/.bubble-tools/wallet', {recursive: true});
+  checkApplicationDir();
+  if (!fs.existsSync(WALLET_DIR)) fs.mkdirSync(WALLET_DIR, {recursive: true});
   if (!force && hasApplicationKey(label)) {
     throw new Error("application key '"+label+"' already exists");
   };
-  fs.writeFileSync(homedir()+'/.bubble-tools/wallet/'+label, privateKey);
-  if (label === 'default-key') fs.writeFileSync(homedir()+'/.bubble-tools/wallet/initial-application-key', privateKey);
+  fs.writeFileSync(WALLET_DIR+'/'+label, privateKey);
+  if (label === 'default-key') fs.writeFileSync(WALLET_DIR+'/initial-application-key', privateKey);
   return true;
 }
 
@@ -88,14 +103,14 @@ function removeApplicationKey(label) {
   label = label.toLowerCase();
   if (label === 'default-key') throw new Error('cannot delete the default-key.  Use wallet.setDefault instead');
   if (label === 'initial-application-key') throw new Error('cannot delete the initial-application-key - it connects this installation to your Bubble');
-  if (!fs.existsSync(homedir()+'/.bubble-tools/wallet/'+label)) throw new Error('key does not exist');
-  fs.unlinkSync(homedir()+'/.bubble-tools/wallet/'+label);
+  if (!fs.existsSync(WALLET_DIR+'/'+label)) throw new Error('key does not exist');
+  fs.unlinkSync(WALLET_DIR+'/'+label);
 }
 
 function setDefaultKey(label='initial-application-key') {
   label = label.toLowerCase();
-  if (!fs.existsSync(homedir()+'/.bubble-tools/wallet/'+label)) throw new Error('key does not exist');
-  fs.copyFileSync(homedir()+'/.bubble-tools/wallet/'+label, homedir()+'/.bubble-tools/wallet/default-key');
+  if (!fs.existsSync(WALLET_DIR+'/'+label)) throw new Error('key does not exist');
+  fs.copyFileSync(WALLET_DIR+'/'+label, WALLET_DIR+'/default-key');
 }
 
 function resetDefaultKey() {
@@ -103,12 +118,12 @@ function resetDefaultKey() {
 }
 
 function hasApplicationKey(label='default-key') {
-  return fs.existsSync(homedir()+'/.bubble-tools/wallet/'+label);
+  return fs.existsSync(WALLET_DIR+'/'+label);
 }
 
 function listKeys(label) {
-  if (!fs.existsSync(homedir()+'/.bubble-tools/wallet')) return [];
-  let keyNames = fs.readdirSync(homedir()+'/.bubble-tools/wallet');
+  if (!fs.existsSync(WALLET_DIR)) return [];
+  let keyNames = fs.readdirSync(WALLET_DIR);
   if (label) keyNames = keyNames.filter(k => { return k === label })
   return keyNames.map(k => {
     const key = getApplicationKey(k);
@@ -137,8 +152,8 @@ let localServers;
 function getServers() {
   if (localServers) return localServers;
 	try {
-    if (!fs.existsSync(homedir()+'/.bubble-tools/servers')) return [];
-    const json = fs.readFileSync(homedir()+'/.bubble-tools/servers', {encoding: 'utf8'});
+    if (!fs.existsSync(SERVERS_FILE)) return [];
+    const json = fs.readFileSync(SERVERS_FILE, {encoding: 'utf8'});
     return JSON.parse(json);
 	}
 	catch(error) {
@@ -177,8 +192,8 @@ function removeServer(label) {
 }
 
 function writeServers(servers) {
-  if (!fs.existsSync(homedir()+'/.bubble-tools')) fs.mkdirSync(homedir()+'/.bubble-tools');
-  fs.writeFileSync(homedir()+'/.bubble-tools/servers', JSON.stringify(servers));
+  checkApplicationDir();
+  fs.writeFileSync(SERVERS_FILE, JSON.stringify(servers));
   localServers = servers;
 }
 
@@ -196,8 +211,8 @@ let localAddressBook;
 function getAddressBook() {
   if (localAddressBook) return localAddressBook;
 	try {
-    if (!fs.existsSync(homedir()+'/.bubble-tools/addresses')) return [];
-    const json = fs.readFileSync(homedir()+'/.bubble-tools/addresses', {encoding: 'utf8'});
+    if (!fs.existsSync(ADDRESSES_FILE)) return [];
+    const json = fs.readFileSync(ADDRESSES_FILE, {encoding: 'utf8'});
     return JSON.parse(json);
 	}
 	catch(error) {
@@ -228,8 +243,8 @@ function removeAddress(label) {
 }
 
 function writeAddressBook(addresses) {
-  if (!fs.existsSync(homedir()+'/.bubble-tools')) fs.mkdirSync(homedir()+'/.bubble-tools');
-  fs.writeFileSync(homedir()+'/.bubble-tools/addresses', JSON.stringify(addresses));
+  checkApplicationDir();
+  fs.writeFileSync(ADDRESSES_FILE, JSON.stringify(addresses));
   localAddressBook = addresses;
 }
 
