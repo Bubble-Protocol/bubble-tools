@@ -14,7 +14,7 @@ import ImageUtils from './utils/image-utils.mjs';
 import StringUtils from './utils/string-utils.mjs';
 
 import './utils/log.js';
-import { generateMintInvitation } from './utils/nft-tools.mjs';
+import { generateMintInvitation, generateMintNextInvitation } from './utils/nft-tools.mjs';
 
 // Constants
 const program = new Commander.Command("bubble");
@@ -45,12 +45,35 @@ program
 		}
 	});
 
+// GENERATEREQUEST Command
+program
+	.command('generateRequest <server> <contract> <filename>')
+	.description('generates a Bubble Dashboard request string for the given vault file.  The vault file must contain the actual request as a json file.  (A request is base58 representation of the bubble url containing the request json).')
+	.action(function(server, contract, filename){
+		try {
+			console.log(StringUtils.stringToBase58(tools.createBubbleUrl(server, contract, filename)));
+		}
+		catch (error) { exitWithError(error) }
+	});
+
 // DID2ADDRESS Command
 program
 	.command('did2address <did>')
 	.description('extracts the ethereum contract address from the given did')
 	.action(function(did){
 		console.log(tools.didToAddress(did));
+	});
+
+// DECODEDID Command
+program
+	.command('decodeDid <did>')
+	.description('decodes and displays the given did url')
+	.action(function(did){
+		const didUrl = tools.decodeDid(did);
+		console.log('address:    '+didUrl.address);
+		console.log('vault url:  '+didUrl.vaultServer.url);
+		console.log('vault id:   '+didUrl.vaultServer.id);
+		console.log('vault file: '+didUrl.file);
 	});
 
 // ADDRESS2DID Command
@@ -63,16 +86,19 @@ program
 
 // CREATEBUBBLEURL Command
 program
-	.command('createBubbleUrl <contractAddress> <vaultUrl> <vaultId> <file>')
-	.description('generates a bubble url given the contract address and vault server information')
-	.action(function(contractAddress, vaultUrl, vaultId, file){
-		console.log(tools.createBubbleUrl(contractAddress, vaultUrl, vaultId, file));
+	.command('createBubbleUrl <server> <contract> <filename>')
+	.description("generates a bubble url.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address.")
+	.action(function(server, contract, filename){
+		try {
+			console.log(tools.createBubbleUrl(server, contract, filename));
+		}
+		catch (error) { exitWithError(error) }
 	});
 
 // SDACFILEHASH Command
 program
 	.command('sdacFileHash <contractAddress> <file>')
-	.description('generates a plain DID for the given ethereum address')
+	.description("returns the 20-byte address generated from the keccak256 hash of the concatenation of the given address and file ready for passing to the GenericBubble SDAC's setPermissions function")
 	.action(function(contractAddress, file){
 		console.log(tools.sdacFileHash(contractAddress, file));
 	});
@@ -194,9 +220,10 @@ program
 program
 	.command('addresses.add <label> <address> [memo]')
 	.description('adds the given address to the address book.  Label must be unique')
-	.action(function(label, address, memo){
+	.option('-l, --toLowerCase', 'make address lowercase')
+	.action(function(label, address, memo, options){
 		try{
-			tools.addressBook.addAddress(label, address, memo)
+			tools.addressBook.addAddress(label, address, memo, options)
 		}
 		catch(error) { exitWithError(error) }
 	});
@@ -217,6 +244,7 @@ program
 	.command('vault.create <server> <contract>')
 	.description("creates a vault on the given vault server controlled by the given smart data access contract.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract can be an address book label or an Ethereum address." )
 	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
+	.option('-l, --toLowerCase', 'make contract address lowercase')
 	.action(function(server, contract, options){
 		try{
 			tools.vault.createVault(server, contract, options)
@@ -245,6 +273,7 @@ program
 	.command('vault.read <server> <contract> <filename>')
 	.description("reads the given vault file and dumps the content to the console.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
 	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
+	.option('-l, --toLowerCase', 'make contract address lowercase')
 	.action(function(server, contract, filename, options){
 		try{
 			tools.vault.readVault(server, contract, filename, options)
@@ -260,6 +289,7 @@ program
 	.description("writes the given file (or data if using the --data option) to the given vault and filename.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
 	.option('--data <string>', 'string data to write instead of a file')
 	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
+	.option('-l, --toLowerCase', 'make contract address lowercase')
 	.action(function(server, contract, filename, file, options){
 		try{
 			tools.vault.writeVault(server, contract, filename, file, options)
@@ -274,7 +304,8 @@ program
 	.command('vault.delete <server> <contract> <filename>')
 	.description("deletes the given file with the given vault and filename.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
 	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
-	.action(function(server, contract, filename, file, options){
+	.option('-l, --toLowerCase', 'make contract address lowercase')
+	.action(function(server, contract, filename, options){
 		try{
 			tools.vault.deleteVaultFile(server, contract, filename, options)
 				.then(console.log)
@@ -292,6 +323,19 @@ program
 	.action(function(contract, series, tokenId, options={}){
 		try{
 			console.log(generateMintInvitation(contract, series, tokenId, options));
+		}
+		catch(error) { exitWithError(error) }
+	});
+
+// GENERATEMINTNEXTINVITATION Command
+program
+	.command('nft.mint-next-invite <contract> <series>')
+	.description("generates an mintNextWithInvite packet for the Bubble NFT contract" )
+	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
+	.option('-e, --expiry <expiryTime>', 'expiry duration in the form 12h (12 hours) or 7d (7days)')
+	.action(function(contract, series, options={}){
+		try{
+			console.log(generateMintNextInvitation(contract, series, options));
 		}
 		catch(error) { exitWithError(error) }
 	});
@@ -352,6 +396,19 @@ program
 	.action(function(){
 		try{
 			tools.wallet.resetDefaultKey();
+		}
+		catch(error) { exitWithError(error) }
+	});
+
+// TERMINATECONTRACT Command
+program
+	.command('contract.terminate <contract>')
+	.description("terminates the given SDAC" )
+	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
+	.action(function(contract, options){
+		try{
+			tools.contract.terminate(contract, options)
+			.catch(error => { exitWithError(error) })
 		}
 		catch(error) { exitWithError(error) }
 	});

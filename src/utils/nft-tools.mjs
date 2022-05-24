@@ -33,6 +33,37 @@ export function generateMintInvitation(contractAddress, series, tokenId, options
   return StringUtils.stringToBase58(JSON.stringify(invite));
 }
 
+
+export function generateMintNextInvitation(contractAddress, series, options={}) {
+  // abi.encodePacked("mintWithInvite", address(this), uint32 series, uint128 tokenId, uint expiryTime)
+  const contract = addressBook.parseAddress(contractAddress);
+  if (!datona.assertions.isAddress(contract)) throw new Error('invalid contract address');
+  if (!series) throw new Error('missing series');
+  const duration = parseDuration(options.expiryTime || '7d');
+  if (!duration) throw new Error('invalid expiry time');
+  const nonce = '0x'+datona.crypto.hash(contractAddress + Date.now() + "nonce");
+  let expiryTime = Math.trunc(new Date(Date.now()+duration).getTime() / 1000)
+  const packet = encodePacked(
+    {type: 'text', value: "mintNextWithInvite"}, 
+    {type: 'address', value: contract}, 
+    {type: 'uint32', value: series}, 
+    {type: 'hex', value: nonce}, 
+    {type: 'uint256', value: expiryTime}
+  );
+  const key = wallet.getApplicationKey(options.key);
+  if (!key) throw new Error('you must connect to your bubble or manually add a key');
+  const signature = '0x'+key.sign(datona.crypto.hash(packet));
+  const invite = {
+    c: contract,
+    s: series,
+    n: nonce,
+    e: expiryTime,
+    sig: signature
+  }
+  console.debug(invite);
+  return StringUtils.stringToBase58(JSON.stringify(invite));
+}
+
 // 0x6d696e7457697468496e76697465d9145cce52d386f254917e481eb44e9943f391380000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000006274067d
 // 0x6d696e7457697468496e76697465d9145cce52d386f254917e481eb44e9943f391380000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000006274067d
 const clParamRegex = /[0-9]+$/;
