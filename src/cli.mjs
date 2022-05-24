@@ -14,7 +14,7 @@ import ImageUtils from './utils/image-utils.mjs';
 import StringUtils from './utils/string-utils.mjs';
 
 import './utils/log.js';
-import { generateMintInvitation, generateMintNextInvitation } from './utils/nft-tools.mjs';
+import { generateMintInvitation, generateMintNextInvitation, mintNft } from './utils/nft-tools.mjs';
 
 // Constants
 const program = new Commander.Command("bubble");
@@ -314,10 +314,24 @@ program
 		catch(error) { exitWithError(error) }
 	});
 
+// MINT Command
+program
+	.command('nft.mint <contract> <series> <tokenId> <recipient>')
+	.description("mints an nft for the Bubble NFT contract" )
+	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
+	.action(function(contract, series, tokenId, options={}){
+		try{
+			mintNft(contract, series, tokenId, options)
+			.then(console.log)
+			.catch(exitWithError);
+		}
+		catch(error) { exitWithError(error) }
+	});
+
 // GENERATEMINTINVITATION Command
 program
 	.command('nft.mint-invite <contract> <series> <tokenId>')
-	.description("generates an mintWithInvite packet for the Bubble NFT contract" )
+	.description("generates an mintWithInvite packet for the Bubble NFT contract with a 28-day expiry (use -e to change expiry)" )
 	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
 	.option('-e, --expiry <expiryTime>', 'expiry duration in the form 12h (12 hours) or 7d (7days)')
 	.action(function(contract, series, tokenId, options={}){
@@ -330,7 +344,7 @@ program
 // GENERATEMINTNEXTINVITATION Command
 program
 	.command('nft.mint-next-invite <contract> <series>')
-	.description("generates an mintNextWithInvite packet for the Bubble NFT contract" )
+	.description("generates an mintNextWithInvite packet for the Bubble NFT contract with a 28-day expiry (use -e to change expiry)" )
 	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
 	.option('-e, --expiry <expiryTime>', 'expiry duration in the form 12h (12 hours) or 7d (7days)')
 	.action(function(contract, series, options={}){
@@ -415,11 +429,29 @@ program
 
 // CALLCONTRACT Command
 program
-	.command('contract.call <contract> <sourceCodeFile> <method> [args...]')
-	.description('calls the given pure or view method of the given contract. SourceCode must be a JSON file containing at least {"abi": [...]}')
-	.action(function(contract, sourceCodeFile, method, args){
+	.command('contract.call <contract> <method> [args...]')
+	.description('calls the given pure or view method of the given contract. Assumes the contract is an SDAC unless the contract source code is given with the --abi or --file option')
+	.option('-a, --abi <abi>', 'abi of contract (in json format)')
+	.option('-f, --file <sourceCodeFile>', 'json file containing an object with at least the abi, i.e. {"abi": [...], ...}')
+	.action(function(contract, method, args, options){
 		try{
-			tools.contract.call(contract, sourceCodeFile, method, args)
+			tools.contract.call(contract, method, args, options)
+			.then(console.log)
+			.catch(error => { exitWithError(error) })
+		}
+		catch(error) { exitWithError(error) }
+	});
+
+// TRANSACTCONTRACT Command
+program
+	.command('contract.transact <contract> <method> [args...]')
+	.description('transacts with the given method of the given contract. Assumes the contract is an SDAC unless the contract source code is given with the --abi or --file option')
+	.option('-k, --key <key>', 'wallet key to use to sign the transaction')
+	.option('-a, --abi <abi>', 'abi of contract (in json format)')
+	.option('-f, --file <sourceCodeFile>', 'json file containing an object with at least the abi, i.e. {"abi": [...], ...}')
+	.action(function(contract, method, args, options){
+		try{
+			tools.contract.transact(contract, method, args, options)
 			.then(console.log)
 			.catch(error => { exitWithError(error) })
 		}

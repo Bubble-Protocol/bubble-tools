@@ -1,5 +1,6 @@
 import datona from 'datona-lib';
 import StringUtils from './string-utils.mjs';
+import fs from 'fs';
 // import gabContract from '../contract/gab-contract.json';
 
 import bip32 from 'bip32';
@@ -290,8 +291,24 @@ export function writeUrl(urlOrString, data, didResolver, key=randomKey, options)
   else return fetch(urlOrString, {method: "POST", body: data});
 }
 
-const randomKey = datona.crypto.generateKey();
+export function paramToHex(param, byteLength, descriptiveName='parameter') {
+  if (!param) throw new Error('missing '+descriptiveName);
+  const baseHex = '0x'+'00'.repeat(byteLength)
+  if (param.startsWith('0x')) return (baseHex+param.substring(2)).slice(-byteLength*2);
+  else {
+    const intParam = parseInt(param);
+    if (isNaN(intParam)) throw new Error('invalid '+descriptiveName);
+    return (baseHex+intParam.toString(16)).slice(-byteLength*2);
+  }
+}
 
+export function readFile(filename, descriptiveName='file', options={}) {
+  console.trace("reading file "+filename);
+  if (!fs.existsSync(filename)) throw new Error(descriptiveName+' does not exist');
+  return fs.readFileSync(filename, {encoding: options.encoding || 'utf8'});
+}
+
+const randomKey = datona.crypto.generateKey();
 
 const bubbleUtils = {
   createRandomId: createRandomId,
@@ -308,7 +325,9 @@ const bubbleUtils = {
   isUrl: isUrl,
   toUrl: toUrl,
   fetchUrl: fetchUrl,
-  writeUrl: writeUrl
+  writeUrl: writeUrl,
+  paramToHex: paramToHex,
+  readFile: readFile
 }
 
 export default bubbleUtils;

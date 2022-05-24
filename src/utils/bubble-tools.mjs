@@ -3,7 +3,7 @@ import StringUtils from "./string-utils.mjs";
 import fs from 'fs';
 import { homedir } from "os";
 
-import { BubbleDIDURL, createBubbleUrlStr, createDID, isBubbleDID } from "./bubble-utils.mjs";
+import { BubbleDIDURL, createBubbleUrlStr, createDID, isBubbleDID, readFile } from "./bubble-utils.mjs";
 
 const APP_DIR = homedir()+'/.bubble-tools';
 const WALLET_DIR = APP_DIR+'/wallet';
@@ -343,7 +343,7 @@ function parseServer(serverStr) {
   return server;
 }
 
-function parseAddress(addressStr, multipath=false) {
+function parseAddress(addressStr) {
   if (datona.assertions.isAddress(addressStr)) return addressStr;
   const parts = addressStr.split('/');
   if (parts.length !== 1) {
@@ -364,7 +364,8 @@ function parseAddress(addressStr, multipath=false) {
     }
     else {
       const intAddress = parseInt(addressStr);
-      if (!isNaN(intAddress)) {
+      if (isNaN(intAddress)) return addressStr;
+      else {
         address = '0x'+("0000000000000000000000000000000000000000"+intAddress.toString(16)).slice(-40);
         if (!datona.assertions.isAddress(address)) address = undefined;
       }
@@ -410,22 +411,39 @@ function terminateContract(contractStr, options={}) {
   return contract.terminate(key);
 }
 
-function callContract(contractStr, sourceCodeFile, method, args) {
+function callContract(contractStr, method, args, options) {
   const contractAddress = parseAddress(contractStr);
-  const sourceCode = JSON.parse(readFile(sourceCodeFile));
-  if (!sourceCode.abi) throw new Error("source code is invalid - must contain an 'abi' field");
-  const contract = new datona.blockchain.Contract(sourceCode.abi, contractAddress);
-  return contract.call(method, args);
+  const abi = options.abi ? JSON.parse(options.abi) : (options.file ? JSON.parse(readFile(options.file, "source code file")).abi : sdacAbi.v1);
+  if (!abi) throw new Error("abi or source code file is invalid");
+  const contract = new datona.blockchain.Contract(abi, contractAddress);
+  const expandedArgs = options.noexpand ? args : _expandAddresses(args);
+  console.trace("contract:", contractAddress);
+  console.trace("calling:", method+'('+expandedArgs.join(', ')+')');
+  return contract.call(method, _expandAddresses(args));
 }
 
-function readFile(filename, descriptiveName='file', options={}) {
-  if (!fs.existsSync(filename)) throw new Error(descriptiveName+' does not exist');
-  return fs.readFileSync(filename, {encoding: options.encoding || 'utf8'});
+function transactContract(contractStr, method, args, options={}) {
+  const contractAddress = parseAddress(contractStr);
+  const abi = options.abi ? JSON.parse(options.abi) : (options.file ? JSON.parse(readFile(options.file, "source code file")).abi : sdacAbi.v1);
+  if (!abi) throw new Error("abi or source code file is invalid");
+  const expandedArgs = options.noexpand ? args : _expandAddresses(args);
+  const key = wallet.getApplicationKey(options.key);
+  if (!key) throw new Error('you must connect to your bubble or manually add a key');
+  console.trace("key:", key.address);
+  console.trace("contract:", contractAddress);
+  console.trace("calling:", method+'('+expandedArgs.join(', ')+')');
+  const contract = new datona.blockchain.Contract(abi, contractAddress);
+  return contract.transact(key, method, expandedArgs);
+}
+
+function _expandAddresses(arr) {
+  return arr.map(v => { return parseAddress(v) });
 }
 
 export const contractTools = {
   terminate: terminateContract,
-  call: callContract
+  call: callContract,
+  transact: transactContract
 }
 
 
