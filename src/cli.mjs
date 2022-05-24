@@ -413,6 +413,19 @@ program
 		catch(error) { exitWithError(error) }
 	});
 
+// CALLCONTRACT Command
+program
+	.command('contract.call <contract> <sourceCodeFile> <method> [args...]')
+	.description('calls the given pure or view method of the given contract. SourceCode must be a JSON file containing at least {"abi": [...]}')
+	.action(function(contract, sourceCodeFile, method, args){
+		try{
+			tools.contract.call(contract, sourceCodeFile, method, args)
+			.then(console.log)
+			.catch(error => { exitWithError(error) })
+		}
+		catch(error) { exitWithError(error) }
+	});
+
 // CATCH ALL
 program
   .on('command:*', function () {

@@ -410,8 +410,22 @@ function terminateContract(contractStr, options={}) {
   return contract.terminate(key);
 }
 
+function callContract(contractStr, sourceCodeFile, method, args) {
+  const contractAddress = parseAddress(contractStr);
+  const sourceCode = JSON.parse(readFile(sourceCodeFile));
+  if (!sourceCode.abi) throw new Error("source code is invalid - must contain an 'abi' field");
+  const contract = new datona.blockchain.Contract(sourceCode.abi, contractAddress);
+  return contract.call(method, args);
+}
+
+function readFile(filename, descriptiveName='file', options={}) {
+  if (!fs.existsSync(filename)) throw new Error(descriptiveName+' does not exist');
+  return fs.readFileSync(filename, {encoding: options.encoding || 'utf8'});
+}
+
 export const contractTools = {
-  terminate: terminateContract
+  terminate: terminateContract,
+  call: callContract
 }
 
 
