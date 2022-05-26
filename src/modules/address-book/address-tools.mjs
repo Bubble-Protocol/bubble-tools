@@ -1,0 +1,88 @@
+import addressBook from "./address-book.mjs";
+
+function registerCommands(program, errorHandler) {
+
+  // SERVERS Command
+  program
+    .command('servers.list')
+    .description('lists the vault servers that can be used with the --server option')
+    .action(function(){
+      try{ 
+        const servers = addressBook.getServers();
+        const colWidth = servers.reduce((max,s) => s.label.length > max ? s.label.length : max, 0);
+        servers.forEach(s => {
+          console.log(s.label+' '.repeat(colWidth-s.label.length)+'\t'+s.id+'\t'+s.url);
+        })
+      }
+      catch(error) { errorHandler(error) }
+    });
+
+  // ADDSERVER Command
+  program
+    .command('servers.add <label> <url> <id>')
+    .description('adds the given server so that it can be used with the --server option.  Label must be unique.')
+    .action(function(label, url, id){
+      try{
+        addressBook.addServer(label, url, id)
+      }
+      catch(error) { errorHandler(error) }
+    });
+
+  // REMOVESERVER Command
+  program
+    .command('servers.remove <label>')
+    .description('removes the given server from the saved servers')
+    .action(function(label){
+      try{
+        addressBook.removeServer(label)
+      }
+      catch(error) { errorHandler(error) }
+    });
+
+  // ADDRESSES Command
+  program
+    .command('addresses.list')
+    .description('displays the address book')
+    .action(function(){
+      try{ 
+        const addresses = addressBook.getAddressBook();
+        const colWidth = addresses.reduce((max,a) => a.label.length > max ? a.label.length : max, 0);
+        addresses.forEach(a => {
+          console.log(a.label+' '.repeat(colWidth-a.label.length)+'\t'+a.address+'\t'+(a.memo || ''));
+        })
+      }
+      catch(error) { errorHandler(error) }
+    });
+
+  // ADDADDRESS Command
+  program
+    .command('addresses.add <label> <address> [memo]')
+    .description('adds the given address to the address book.  Label must be unique')
+    .option('-l, --toLowerCase', 'make address lowercase')
+    .action(function(label, address, memo, options){
+      try{
+        addressBook.addAddress(label, address, memo, options)
+      }
+      catch(error) { errorHandler(error) }
+    });
+
+  // REMOVEADDRESS Command
+  program
+    .command('addresses.remove <label>')
+    .description('removes the given address from the address book')
+    .action(function(label){
+      try{
+        addressBook.removeAddress(label)
+      }
+      catch(error) { errorHandler(error) }
+    });
+
+}
+
+const AddressTools = {
+  registerCommands: registerCommands,
+  addressBook: addressBook
+}
+
+export default AddressTools;
+
