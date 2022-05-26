@@ -1,7 +1,7 @@
 import datona from "datona-lib";
 import wallet from "../wallet/wallet.mjs";
 import addressBook from "../address-book/address-book.mjs";
-import { readFile } from "../../utils/bubble-utils.mjs";
+import { readFile } from "../../utils/file-utils.mjs";
 
 function registerCommands(program, errorHandler) {
 

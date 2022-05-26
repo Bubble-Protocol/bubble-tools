@@ -1,6 +1,13 @@
+/**
+ * General Image utility functions
+ */
+
 import fs from 'fs';
 import mime from 'mime-types';
 
+/**
+ * Returns a string containing the base64 representation of the given image file.  String includes 'data' uri header.
+ */
 export function imageFileToBase64(file) {
   return new Promise( (resolve, reject) => {
     fs.readFile(file, {}, (error, data) => {

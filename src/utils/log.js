@@ -12,10 +12,19 @@
  * 
  *   where <level> is one of 'timestamp', 'trace', 'debug', 'log', 'info', 'warn', 'error'
  * 
- *   By default, trace and debug are disabled and the timestamp is disabled
+ *   By default, trace and debug are disabled and the timestamp is disabled.  All other levels are enabled.
  * 
  *   For browsers that don't set the console immediately on construction, it may be necessary to call
- *   initialise() manually before using the trace and debug functions.
+ *   constructLogger() manually before using the trace and debug functions.
+ * 
+ * Example:
+ * 
+ *   require('log.js');
+ * 	 console.enable("trace");
+ *   console.enable("debug");
+ *   console.enable("timestamp");
+ * 
+ *   console.trace("Logger enabled");
  */
 
 

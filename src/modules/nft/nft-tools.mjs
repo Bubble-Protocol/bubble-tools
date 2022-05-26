@@ -2,7 +2,6 @@ import datona from "datona-lib";
 import wallet from "../wallet/wallet.mjs";
 import addressBook from "../address-book/address-book.mjs";
 import  BlockchainTools from "../blockchain/blockchain-tools.mjs";
-import { paramToHex } from "../../utils/bubble-utils.mjs";
 import StringUtils from "../../utils/string-utils.mjs";
 import { parseDuration } from "../../utils/time-utils.mjs";
 
@@ -69,8 +68,8 @@ const BubbleNFTAbi = [{"inputs": [{"internalType": "address", "name": "accountOr
 function mintNft(contractAddress, series, tokenId, recipientAddress, options) {
   const contract = addressBook.parseAddress(contractAddress);
   if (!datona.assertions.isAddress(contract)) throw new Error('invalid contract address');
-  const seriesHex = paramToHex(series, 8, "series");
-  const tokenIdHex = paramToHex(tokenId, 32, "tokenId");
+  const seriesHex = _paramToHex(series, 8, "series");
+  const tokenIdHex = _paramToHex(tokenId, 32, "tokenId");
   const recipient = addressBook.parseAddress(recipientAddress);
   if (!datona.assertions.isAddress(recipient)) throw new Error('invalid recipient address');
   return BlockchainTools.transactContract(contractAddress, 'mint', [seriesHex, tokenIdHex, recipientAddress], {...options, abi: BubbleNFTAbi})
@@ -189,4 +188,15 @@ function encodePacked(...args) {
   const finalPacket = packet.slice(0, index);
   console.debug(finalPacket.length+' bytes', '0x'+datona.crypto.uint8ArrayToHex(finalPacket))
   return finalPacket;
+}
+
+function _paramToHex(param, byteLength, descriptiveName='parameter') {
+  if (!param) throw new Error('missing '+descriptiveName);
+  const baseHex = '0x'+'00'.repeat(byteLength)
+  if (param.startsWith('0x')) return (baseHex+param.substring(2)).slice(-byteLength*2);
+  else {
+    const intParam = parseInt(param);
+    if (isNaN(intParam)) throw new Error('invalid '+descriptiveName);
+    return (baseHex+intParam.toString(16)).slice(-byteLength*2);
+  }
 }

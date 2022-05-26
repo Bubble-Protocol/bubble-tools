@@ -1,3 +1,17 @@
+/**
+ * General Time utility functions
+ */
+
+/**
+ * Parses a string representation of a duration in hours, days and/or weeks and returns the number 
+ * of seconds.
+ * 
+ * Examples:
+ *   '1h' -> 3600
+ *   '1d' -> 86400
+ *   '1w' -> 604800
+ *   '2w3d4h' -> 1483200
+ */
 export function parseDuration(durationStr) {
   const tokens = durationStr.toLowerCase().match(/[a-z]+|[0-9]+/g);
   if (tokens.length % 2 !== 0) return undefined;

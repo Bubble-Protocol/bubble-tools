@@ -1,3 +1,7 @@
+/**
+ * General String utility functions
+ * 
+ */
 
 import bs58 from "bs58";
 
@@ -12,10 +16,16 @@ function copyStringToClipboard (str) {
   document.body.removeChild(el);
 }
 
+/**
+ * Converts a datona-lib url object to a string url
+ */
 function urlToString(url) {
   return url.scheme + '//' + url.host + (url.port ? ':'+url.port : "");
 }
 
+/**
+ * Converts a url string to a datona-lib url object
+ */
 function stringToUrl(urlStr) {
   try {
     if (!urlStr) throw new Error("url is empty");
@@ -36,10 +46,16 @@ function stringToUrl(urlStr) {
   }
 }
 
+/**
+ * Returns a new string with the first letter capitalised
+ */
 function capitalise(str) {
   return str[0].toUpperCase() + str.substring(1);
 }
 
+/**
+ * Returns a new string with all words capitalised
+ */
 function capitaliseAllWords(str) {
   return str.split(' ')
     .map(a => a.trim())
@@ -47,11 +63,18 @@ function capitaliseAllWords(str) {
     .join(" ")
 }
 
+/**
+ * Returns a new string appended with 's' if value != 1.
+ * If includeValue is true then the value will be appended separated by a space
+ */
 function pluralise(str, value, includeValue = false) {
   const pluralisedStr = value === 1 ? str : str+"s";
   return includeValue ? value + " " +pluralisedStr : pluralisedStr;
 }
 
+/**
+ * Returns the mimetype of the given url string based on the url's file extension
+ */
 function getMimeType(url) {
   const extensions = url.match(/\.[a-z0-9]+(?:\?|$)/);
   let mimeType = "unknown";
@@ -107,11 +130,10 @@ function getMimeType(url) {
   return mimeType;
 }
 
-//
-// Cryptographic Utils
-//
 
-
+/**
+ * returns the unicode array representation of the given string
+ */
 function textToByteArray(val, length) {
   const arr = new Uint8Array(length);
   let arrIndex = length - val.length;
@@ -121,6 +143,13 @@ function textToByteArray(val, length) {
   return arr;
 }
 
+/**
+ * Returns the byte array representation of the given hex string.  Hex string may be with or
+ * without a leading '0x'.
+ * 
+ * Warning: the client is responsible for ensuring the string is a valid hex string.  Non-hex
+ * chars will be converted to zero.
+ */
 function hexToByteArray(val, length) {
   if (val.startsWith("0x")) val = val.substr(2);
   const arr = new Uint8Array(length);
@@ -132,6 +161,13 @@ function hexToByteArray(val, length) {
   return arr;
 }
 
+/**
+ * Returns the byte array representation of the given unsigned integer.  The length of the
+ * array must be provided by the client.
+ * 
+ * Warning: the client is responsible for ensuring the length is sufficient for holding the
+ * the value or else an index error will be thrown.
+ */
 function uintToByteArray(val, length) {
   const arr = new Uint8Array(length);
   let i = arr.length-1;
@@ -142,33 +178,51 @@ function uintToByteArray(val, length) {
   return arr;
 }
 
+/**
+ * Returns a new string with the base-58 representation of the given string
+ */
 function stringToBase58(str) { 
   if (str === undefined) return undefined; 
   return bs58.encode(Buffer.from(str)) 
 }
 
+/**
+ * Decodes the given base-58 encoded string and returns the result 
+ */
 function base58ToString(str) { 
   if (str === undefined) return undefined; 
   return bs58.decode(str).toString() 
 }
 
+/**
+ * Returns a new string with the base-58 representation of the given unsigned integer
+ */
 function uintToBase58(int) { 
-  const size = int/256 + 1;
   if (int === undefined) return undefined; 
+  const size = int/256 + 1;
   return bs58.encode(uintToByteArray(int, size))
 }
 
+/**
+ * Decodes the given base-58 encoded uint and returns the result 
+ */
 function base58ToUint(str) { 
   if (str === undefined) return undefined; 
   return parseInt(bs58.decode(str).toString('hex'), 16); 
 }
 
+/**
+ * Returns a new string with the base-58 representation of the given hex string
+ */
 function hexToBase58(address) { 
   if (address === undefined) return undefined; 
   if (address.startsWith("0x")) address = address.substr(2); 
   return bs58.encode(Buffer.from(address, 'hex')) 
 }
 
+/**
+ * Decodes the given base-58 encoded hex string and returns the result 
+ */
 function base58ToHex(address) { 
   if (address === undefined) return undefined; 
   return "0x"+bs58.decode(address).toString('hex') 

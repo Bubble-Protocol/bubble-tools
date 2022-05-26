@@ -9,7 +9,6 @@
 // Modules
 import Commander from 'commander';
 import datona from 'datona-lib';
-import tools from './modules/bubble/bubble-tools.mjs';
 import wallet from "./modules/wallet/wallet.mjs";
 import StringUtils from './utils/string-utils.mjs';
 import './utils/log.js';
