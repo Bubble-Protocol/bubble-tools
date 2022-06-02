@@ -15,12 +15,23 @@ import fs from 'fs';
  export function readFile(filename, descriptiveName='file', options={}) {
   console.trace("reading file "+filename);
   if (!fs.existsSync(filename)) throw new Error(descriptiveName+' does not exist');
+  let contents;
   try {
-    fs.readFileSync(filename, {encoding: options.encoding || 'utf8'});
+    contents = fs.readFileSync(filename, {encoding: options.encoding || 'utf8'});
   }
   catch(error) {
     console.trace(error);
     throw new Error(descriptiveName+' could not be read: '+error.message);
   }
+  if (options.json) {
+    try {
+      contents = JSON.parse(contents);
+    }
+    catch(error) {
+      console.trace(error);
+      throw new Error(descriptiveName+' is not valid json');
+    }
+  }
+  return contents;
 }
 

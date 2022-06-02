@@ -74,8 +74,8 @@ function listKeys(label) {
   if (label) keyNames = keyNames.filter(k => { return k === label })
   return keyNames.map(k => {
     const key = getApplicationKey(k);
-    if (key) return {name: k, address: key.address, publicKey: '0x'+datona.crypto.uint8ArrayToHex(key.publicKey)}
-    else return {name: k, address: 'error!', publicKey: ''}
+    if (key) return {label: k, address: key.address, publicKey: '0x'+datona.crypto.uint8ArrayToHex(key.publicKey)}
+    else return {label: k, address: 'error!', publicKey: ''}
   })
 }
 

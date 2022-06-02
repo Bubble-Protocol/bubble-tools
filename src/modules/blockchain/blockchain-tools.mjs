@@ -9,6 +9,25 @@ function registerCommands(program, errorHandler) {
     .command('contract')
     .description("deploy, terminate, transact and call smart contracts" );
 
+  // DEPOLYCONTRACT Command
+  group
+    .command('deploy [args...]')
+    .description('deploys a contract and outputs its address. Use the --file option or the --abi and --bytecode options to specify the contract source code')
+    .option('-k, --key <key>', 'wallet key to use to sign the transaction')
+    .option('-a, --abi <abi>', 'abi of contract (in json format)')
+    .option('-b, --bytecode <bytecode>', 'bytecode of contract (hex string)')
+    .option('-f, --file <sourceCodeFile>', 'json file containing an object with the abi and bytecode, i.e. {"abi": [...], "bytecode": "..."}')
+    .option('-s, --save <label>', 'save the deployed contract address to the address book with the given label')
+    .option('-m, --memo <label>', 'use in conjunction with -s to save the deployed contract address with the given memo')
+    .action(function(contract, args, options){
+      try{
+        deployContract(contract, args, options)
+        .then(console.log)
+        .catch(error => { errorHandler(error) })
+      }
+      catch(error) { errorHandler(error) }
+    });
+
   // TERMINATECONTRACT Command
   group
     .command('terminate <contract>')
@@ -86,6 +105,33 @@ const bubbleNet = {
 
 datona.blockchain.setProvider(bubbleNet.blockchainUrl, bubbleNet.blockchain);
 
+function deployContract(args, options={}) {
+  const sourceCode = options.file ? readFile(options.file, 'source code file', {json: true}) : {};
+  const abi = options.abi || sourceCode.abi || sdacAbi.v1;
+  let bytecode = options.bytecode || sourceCode.bytecode;
+  if (!bytecode) throw new Error("missing bytecode");
+  if (bytecode.startsWith('0x')) bytecode = bytecode.substring(2);
+  const expandedArgs = options.noexpand ? args : _expandAddresses(args);
+  const key = wallet.getApplicationKey(options.key);
+  if (!key) throw new Error('you must connect to your bubble or manually add a key');
+  console.trace("key:", key.address);
+  console.trace("constructor args:", expandedArgs.join(', '));
+  const contract = new datona.blockchain.Contract(abi);
+  return contract.deploy(key, bytecode, expandedArgs)
+    .then(address => {
+      if (options.save) {
+        try {
+          addressBook.addAddress(options.save, address, options.memo);
+        }
+        catch(error) {
+          console.trace(error);
+          console.error('deployed contract but failed to save address:', error.message);
+        }
+        return address;
+      }
+    });
+}
+
 function terminateContract(contractStr, options={}) {
   const contractAddress = addressBook.parseAddress(contractStr);
   const key = wallet.getApplicationKey(options.key);
@@ -106,8 +152,8 @@ function callContract(contractStr, method, args, options) {
 
 function transactContract(contractStr, method, args, options={}) {
   const contractAddress = addressBook.parseAddress(contractStr);
-  const abi = options.abi || (options.file ? JSON.parse(readFile(options.file, "source code file")).abi : sdacAbi.v1);
-  if (!abi) throw new Error("abi or source code file is invalid");
+  const sourceCode = options.file ? readFile(options.file, 'source code file', {json: true}) : {};
+  const abi = options.abi || sourceCode.abi || sdacAbi.v1;
   const expandedArgs = options.noexpand ? args : _expandAddresses(args);
   const key = wallet.getApplicationKey(options.key);
   if (!key) throw new Error('you must connect to your bubble or manually add a key');

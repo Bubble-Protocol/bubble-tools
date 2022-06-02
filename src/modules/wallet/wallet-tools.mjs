@@ -19,7 +19,7 @@ function registerCommands(program, errorHandler) {
       }
     });
 
-  // GETKEY Command
+  // LISTKEYS Command
   group
     .command('list [label]')
     .description("lists the keys in your wallet and displays their public addresses" )
@@ -28,7 +28,7 @@ function registerCommands(program, errorHandler) {
       try{
         wallet.listKeys(label, options.publicKey).forEach(key => {
           const publicKey = options.publicKey ? '\t'+key.publicKey : '';
-          console.log(key.name+'\t'+key.address+publicKey);
+          console.log(key.label+'\t'+key.address+publicKey);
         })
       }
       catch(error) { errorHandler(error) }

@@ -27,7 +27,8 @@ const program = new Commander.Command();
 program
 	.version('0.1.1-alpha')
 	.usage('<command> [options] [args]   # Try datona <command> --help')
-	.option('-v, --verbose', 'trace and debug output');
+	.option('-v, --verbose', 'trace and debug output')
+	.parseOptions(process.argv);
 
 if (program.opts().verbose) {
 	console.enable("trace")

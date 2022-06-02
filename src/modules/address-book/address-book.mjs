@@ -2,9 +2,18 @@ import datona from "datona-lib";
 import fs from 'fs';
 import {APP_DIR} from "../../config.mjs";
 import { BubbleDIDURL, isBubbleDID } from "../../utils/bubble-utils.mjs";
+import wallet from "../wallet/wallet.mjs";
 
 const SERVERS_FILE = APP_DIR+'/servers';
 const ADDRESSES_FILE = APP_DIR+'/addresses';
+
+
+function checkApplicationDir() {
+  if (!fs.existsSync(APP_DIR)) {
+    fs.mkdirSync(APP_DIR, {recursive: true});
+    fs.chmodSync(APP_DIR, 0o700);
+  }
+}
 
 
 // SERVERS
@@ -135,6 +144,8 @@ function parseAddress(addressStr) {
     else return undefined;
   }
   const addresses = getAddressBook();
+  addresses.push(...wallet.listKeys(addressStr));
+  console.debug(addresses);
   let address = addresses.find(a => { return a.label === addressStr.toLowerCase() });
   if (address) {
     address = address.address;
