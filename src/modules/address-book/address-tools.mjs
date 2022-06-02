@@ -44,7 +44,7 @@ function registerCommands(program, errorHandler) {
       catch(error) { errorHandler(error) }
     });
 
-    
+
   const servers = program
     .command('servers')
     .description("view and manage your bubble servers" );
@@ -67,6 +67,7 @@ function registerCommands(program, errorHandler) {
   // ADDSERVER Command
   servers
     .command('add <label> <url> <id>')
+    .summary('adds a server to the address book')
     .description('adds the given server so that it can be used with the --server option.  Label must be unique.')
     .action(function(label, url, id){
       try{
@@ -78,7 +79,7 @@ function registerCommands(program, errorHandler) {
   // REMOVESERVER Command
   servers
     .command('remove <label>')
-    .description('removes the given server from the saved servers')
+    .description('removes the given server from the address book')
     .action(function(label){
       try{
         addressBook.removeServer(label)

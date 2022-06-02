@@ -37,7 +37,8 @@ function registerCommands(program, errorHandler) {
   // CREATEKEY Command
   group
     .command('create <label> [privateKey]')
-    .description("create a new private key with the given name.  If privateKey is not given then a new random key is created." )
+    .summary("store or create a private key with the given label" )
+    .description("create a new private key with the given label.  If privateKey is not given then a new random key is created." )
     .action(function(label, privateKey){
       try{
         if (privateKey) wallet.addApplicationKey(label, privateKey);

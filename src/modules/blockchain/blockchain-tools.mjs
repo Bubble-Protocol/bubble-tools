@@ -10,9 +10,10 @@ function registerCommands(program, errorHandler) {
     .command('contract')
     .description("deploy, terminate, transact and call smart contracts" );
 
-  // DEPOLYCONTRACT Command
+  // DEPLOYCONTRACT Command
   group
     .command('deploy [args...]')
+    .summary('deploys a contract and outputs its address')
     .description('deploys a contract and outputs its address. Use the --file option or the --abi and --bytecode options to specify the contract source code')
     .option('-k, --key <key>', 'wallet key to use to sign the transaction')
     .option('-a, --abi <abi>', 'abi of contract (in json format)')
@@ -45,6 +46,7 @@ function registerCommands(program, errorHandler) {
   // CALLCONTRACT Command
   group
     .command('call <contract> <method> [args...]')
+    .summary('calls the given pure or view method of the given contract')
     .description('calls the given pure or view method of the given contract. Assumes the contract is an SDAC unless the contract source code is given with the --abi or --file option')
     .option('-a, --abi <abi>', 'abi of contract (in json format)')
     .option('-f, --file <sourceCodeFile>', 'json file containing an object with at least the abi, i.e. {"abi": [...], ...}')
@@ -60,6 +62,7 @@ function registerCommands(program, errorHandler) {
   // TRANSACTCONTRACT Command
   group
     .command('transact <contract> <method> [args...]')
+    .summary('transacts with the given method of the given contract')
     .description('transacts with the given method of the given contract. Assumes the contract is an SDAC unless the contract source code is given with the --abi or --file option')
     .option('-k, --key <key>', 'wallet key to use to sign the transaction')
     .option('-a, --abi <abi>', 'abi of contract (in json format)')

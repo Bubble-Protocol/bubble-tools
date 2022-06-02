@@ -114,14 +114,15 @@ function writeAddressBook(addresses) {
   localAddressBook = addresses;
 }
 
-function parseServer(serverStr) {
+function parseServer(serverStr, silent=true, descriptiveName='server') {
+  if (!serverStr) return undefined;
   const servers = getServers();
   let server = servers.find(s => {return s.label === serverStr.toLowerCase()});
   if (!server) {
     try {
       const url = new URL(serverStr)
-      const id = (new URLSearchParams(url.search)).get('id');
-      datona.assertions.isAddress(id, 'server url id');
+      const id = parseAddress((new URLSearchParams(url.search)).get('id'));
+      datona.assertions.isAddress(id, 'id');
       server = {
         url: url.protocol+'//'+url.host+url.pathname,
         id: id
@@ -129,12 +130,14 @@ function parseServer(serverStr) {
     }
     catch(error) {
       console.debug(error);
+      if (!silent) throw new Error(descriptiveName+' is invalid: '+error.message);
     }
   }
   return server;
 }
 
-function parseAddress(addressStr) {
+function parseAddress(addressStr, silent=true, descriptiveName='address') {
+  if (!addressStr) return undefined;
   if (datona.assertions.isAddress(addressStr)) return addressStr;
   const parts = addressStr.split('/');
   if (parts.length !== 1) {
@@ -157,10 +160,16 @@ function parseAddress(addressStr) {
     }
     else {
       const intAddress = parseInt(addressStr);
-      if (isNaN(intAddress)) return addressStr;
+      if (isNaN(intAddress)) {
+        if (silent) address = undefined;
+        else throw new Error(descriptiveName+' is invalid')
+      }
       else {
         address = '0x'+("0000000000000000000000000000000000000000"+intAddress.toString(16)).slice(-40);
-        if (!datona.assertions.isAddress(address)) address = undefined;
+        if (!datona.assertions.isAddress(address)) {
+          if (silent) address = undefined;
+          else throw new Error(descriptiveName+' is invalid')
+        }
       }
     }
   }

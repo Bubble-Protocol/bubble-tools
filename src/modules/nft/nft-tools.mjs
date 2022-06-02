@@ -28,6 +28,7 @@ function registerCommands(program, errorHandler) {
   // GENERATEMINTINVITATION Command
   group
   .command('mint-invite <contract> <series> <tokenId>')
+  .summary("generates an mintWithInvite packet for the Bubble NFT contract" )
   .description("generates an mintWithInvite packet for the Bubble NFT contract with a 28-day expiry (use -e to change expiry)" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-e, --expiry <expiryTime>', 'expiry duration in the form 12h (12 hours) or 7d (7days)')
@@ -41,6 +42,7 @@ function registerCommands(program, errorHandler) {
   // GENERATEMINTNEXTINVITATION Command
   group
   .command('mint-next-invite <contract> <series>')
+  .summary("generates an mintNextWithInvite packet for the Bubble NFT contract" )
   .description("generates an mintNextWithInvite packet for the Bubble NFT contract with a 28-day expiry (use -e to change expiry)" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-e, --expiry <expiryTime>', 'expiry duration in the form 12h (12 hours) or 7d (7days)')
@@ -196,11 +198,6 @@ function encodePacked(...args) {
 
 function _paramToHex(param, byteLength, descriptiveName='parameter') {
   if (!param) throw new Error('missing '+descriptiveName);
-  const baseHex = '0x'+'00'.repeat(byteLength)
-  if (param.startsWith('0x')) return (baseHex+param.substring(2)).slice(-byteLength*2);
-  else {
-    const intParam = parseInt(param);
-    if (isNaN(intParam)) throw new Error('invalid '+descriptiveName);
-    return (baseHex+intParam.toString(16)).slice(-byteLength*2);
-  }
+  const hex = StringUtils.uintToHex(param, byteLength);
+  if (!hex) throw new Error('invalid '+descriptiveName);
 }

@@ -13,8 +13,10 @@ function registerCommands(program, errorHandler) {
 
   // CREATEVAULT Command
   group
-  .command('create <server> <contract>')
-  .description("creates a vault on the given vault server controlled by the given smart data access contract.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract can be an address book label or an Ethereum address." )
+  .command('create')
+  .description("creates a vault on the given vault server controlled by the given smart data access contract" )
+  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<contract>', "an address book label or an Ethereum address" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-l, --toLowerCase', 'make contract address lowercase')
   .action(function(server, contract, options){
@@ -28,8 +30,10 @@ function registerCommands(program, errorHandler) {
 
   // DELETEVAULT Command
   group
-  .command('deleteVault <server> <contract>')
-  .description("deletes the given vault server controlled by the given smart data access contract.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract can be an address book label or an Ethereum address." )
+  .command('deleteVault')
+  .description("deletes the given vault server controlled by the given smart data access contract" )
+  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<contract>', "an address book label or an Ethereum address" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .action(function(server, contract, options){
     try{
@@ -42,8 +46,11 @@ function registerCommands(program, errorHandler) {
 
   // READVAULT Command
   group
-  .command('read <server> <contract> <filename>')
-  .description("reads the given vault file and dumps the content to the console.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
+  .command('read')
+  .description("reads the given vault file and dumps the content to the console" )
+  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<contract>', "an address book label or an Ethereum address" )
+  .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-l, --toLowerCase', 'make contract address lowercase')
   .action(function(server, contract, filename, options){
@@ -57,8 +64,12 @@ function registerCommands(program, errorHandler) {
 
   // WRITEVAULT Command
   group
-  .command('write <server> <contract> <filename> [file]')
-  .description("writes the given file (or data if using the --data option) to the given vault and filename.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
+  .command('write')
+  .description("writes the given file (or data if using the --data option) to the given vault and filename" )
+  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<contract>', "an address book label or an Ethereum address" )
+  .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
+  .argument('[file]', "the file to write" )
   .option('--data <string>', 'string data to write instead of a file')
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-l, --toLowerCase', 'make contract address lowercase')
@@ -73,8 +84,11 @@ function registerCommands(program, errorHandler) {
 
   // DELETEVAULTFILE Command
   group
-  .command('delete <server> <contract> <filename>')
-  .description("deletes the given file with the given vault and filename.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
+  .command('delete')
+  .description("deletes the given file with the given vault and filename" )
+  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<contract>', "an address book label or an Ethereum address" )
+  .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-l, --toLowerCase', 'make contract address lowercase')
   .action(function(server, contract, filename, options){
@@ -92,8 +106,12 @@ function registerUtils(program, errorHandler) {
 
   // GENERATEREQUEST Command
   program
-    .command('generateRequest <server> <contract> <filename>')
+    .command('generateRequest')
+    .summary('generates a Bubble Dashboard request string for the given vault file')
     .description('generates a Bubble Dashboard request string for the given vault file.  The vault file must contain the actual request as a json file.  (A request is base58 representation of the bubble url containing the request json).')
+    .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+    .argument('<contract>', "an address book label or an Ethereum address" )
+    .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
     .action(function(server, contract, filename){
       try {
         console.log(StringUtils.stringToBase58(createBubbleUrl(server, contract, filename)));
@@ -103,15 +121,19 @@ function registerUtils(program, errorHandler) {
 
   // SDACFILEHASH Command
   program
-    .command('sdacFileHash <contractAddress> <file>')
+    .command('sdacFileHash')
+    .summary("Prepare a hash for the GenericBubble SDAC's setPermissions function")
     .description("returns the 20-byte address generated from the keccak256 hash of the concatenation of the given address and file ready for passing to the GenericBubble SDAC's setPermissions function")
-    .action(function(contractAddress, file){
-      console.log(sdacFileHash(contractAddress, file));
+    .argument('<contract>', "an address book label or an Ethereum address" )
+    .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
+      .action(function(contract, filename){
+      console.log(sdacFileHash(contract, filename));
     });
 
   // FILEHASH Command
   program
     .command('fileHash <data>')
+    .summary('returns the 20-byte address generated from the keccak256 hash of the given string')
     .description('returns the 20-byte address generated from the keccak256 hash of the given string i.e. the last 20-bytes of keccak256(data)')
     .action(function(data){
       console.log(toChecksumAddress(datona.crypto.hash(data).substring(24)));
@@ -127,8 +149,11 @@ function registerUtils(program, errorHandler) {
 
   // CREATEBUBBLEURL Command
   program
-  .command('createBubbleUrl <server> <contract> <filename>')
-  .description("generates a bubble url.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address.")
+  .command('createBubbleUrl')
+  .description("generates a bubble url for a vault file")
+  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<contract>', "an address book label or an Ethereum address" )
+  .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
   .action(function(server, contract, filename){
     try {
       console.log(createBubbleUrl(server, contract, filename));

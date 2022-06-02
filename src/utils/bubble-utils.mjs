@@ -63,7 +63,9 @@ const DID_VERSION = 0;
  */
 export function createBubbleUrlStr(contractAddress, vaultServer, file) {
   const params = [];
-  if (vaultServer) params.push("vault="+StringUtils.stringToBase58(vaultServer.id.replace('0x','')+vaultServer.url));
+  if (vaultServer && vaultServer.url && vaultServer.id) {
+    params.push("vault="+StringUtils.stringToBase58(vaultServer.id.replace('0x','')+vaultServer.url));
+  }
   if (file) params.push("file="+StringUtils.hexToBase58(file));
   const paramStr = params.length > 0 ? '?'+params.join('&') : "";
   const addressStr = StringUtils.hexToBase58(contractAddress);

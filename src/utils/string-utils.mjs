@@ -228,6 +228,17 @@ function base58ToHex(address) {
   return "0x"+bs58.decode(address).toString('hex') 
 }
 
+function uintToHex(val, byteLength) {
+  if (!val) return undefined;
+  const baseHex = '0x'+'00'.repeat(byteLength)
+  if (param.startsWith('0x')) return (baseHex+param.substring(2)).slice(-byteLength*2);
+  else {
+    const intParam = parseInt(param);
+    if (isNaN(intParam)) return undefined;
+    return (baseHex+intParam.toString(16)).slice(-byteLength*2);
+  }
+}
+
 //
 // Exports
 //
@@ -248,7 +259,8 @@ const StringUtils = {
   pluralise: pluralise,
   textToByteArray: textToByteArray,
   hexToByteArray: hexToByteArray,
-  uintToByteArray: uintToByteArray
+  uintToByteArray: uintToByteArray,
+  uintToHex: uintToHex
 };
 
 export default StringUtils;

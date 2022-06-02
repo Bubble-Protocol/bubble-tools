@@ -39,6 +39,7 @@ WalletTools.registerCommands(program, exitWithError);
 AddressTools.registerCommands(program, exitWithError);
 BubbleTools.registerCommands(program, exitWithError);
 BlockchainTools.registerCommands(program, exitWithError);
+DIDTools.registerCommands(program, exitWithError);
 NFTTools.registerCommands(program, exitWithError);
 
 const utils = program
@@ -46,7 +47,6 @@ const utils = program
 .description("general utility functions" );
 
 BubbleTools.registerUtils(utils, exitWithError);
-DIDTools.registerCommands(utils, exitWithError);
 CryptoTools.registerCommands(utils, exitWithError);
 ImageTools.registerCommands(utils, exitWithError);
 
