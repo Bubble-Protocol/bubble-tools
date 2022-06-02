@@ -7,9 +7,13 @@ import { createBubbleUrlStr } from "../../utils/bubble-utils.mjs";
 
 function registerCommands(program, errorHandler) {
 
+  const group = program
+    .command('vault')
+    .description("create and manage bubble vaults" );
+
   // CREATEVAULT Command
-  program
-  .command('vault.create <server> <contract>')
+  group
+  .command('create <server> <contract>')
   .description("creates a vault on the given vault server controlled by the given smart data access contract.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract can be an address book label or an Ethereum address." )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-l, --toLowerCase', 'make contract address lowercase')
@@ -23,8 +27,8 @@ function registerCommands(program, errorHandler) {
   });
 
   // DELETEVAULT Command
-  program
-  .command('vault.deleteVault <server> <contract>')
+  group
+  .command('deleteVault <server> <contract>')
   .description("deletes the given vault server controlled by the given smart data access contract.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract can be an address book label or an Ethereum address." )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .action(function(server, contract, options){
@@ -37,8 +41,8 @@ function registerCommands(program, errorHandler) {
   });
 
   // READVAULT Command
-  program
-  .command('vault.read <server> <contract> <filename>')
+  group
+  .command('read <server> <contract> <filename>')
   .description("reads the given vault file and dumps the content to the console.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-l, --toLowerCase', 'make contract address lowercase')
@@ -52,8 +56,8 @@ function registerCommands(program, errorHandler) {
   });
 
   // WRITEVAULT Command
-  program
-  .command('vault.write <server> <contract> <filename> [file]')
+  group
+  .command('write <server> <contract> <filename> [file]')
   .description("writes the given file (or data if using the --data option) to the given vault and filename.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
   .option('--data <string>', 'string data to write instead of a file')
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
@@ -68,8 +72,8 @@ function registerCommands(program, errorHandler) {
   });
 
   // DELETEVAULTFILE Command
-  program
-  .command('vault.delete <server> <contract> <filename>')
+  group
+  .command('delete <server> <contract> <filename>')
   .description("deletes the given file with the given vault and filename.  Server can a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456'.  Contract and file can be an address book label or an Ethereum address." )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-l, --toLowerCase', 'make contract address lowercase')
@@ -81,6 +85,10 @@ function registerCommands(program, errorHandler) {
     }
     catch(error) { errorHandler(error) }
   });
+
+}
+
+function registerUtils(program, errorHandler) {
 
   // GENERATEREQUEST Command
   program
@@ -130,8 +138,10 @@ function registerCommands(program, errorHandler) {
 
 }
 
+
 export const BubbleTools = {
   registerCommands: registerCommands,
+  registerUtils: registerUtils,
   createVault: createVault,
   deleteVault: deleteVault,
   readVault: readVault,

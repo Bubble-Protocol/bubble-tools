@@ -7,14 +7,18 @@ import { parseDuration } from "../../utils/time-utils.mjs";
 
 function registerCommands(program, errorHandler) {
 
+  const group = program
+    .command('nft')
+    .description("mint bubble nfts and create invitations" );
+
   // MINT Command
-  program
-  .command('nft.mint <contract> <series> <tokenId> <recipient>')
+  group
+  .command('mint <contract> <series> <tokenId> <recipient>')
   .description("mints an nft for the Bubble NFT contract" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
-  .action(function(contract, series, tokenId, options={}){
+  .action(function(contract, series, tokenId, recipient, options={}){
     try{
-      mintNft(contract, series, tokenId, options)
+      mintNft(contract, series, tokenId, recipient, options)
       .then(console.log)
       .catch(errorHandler);
     }
@@ -22,8 +26,8 @@ function registerCommands(program, errorHandler) {
   });
 
   // GENERATEMINTINVITATION Command
-  program
-  .command('nft.mint-invite <contract> <series> <tokenId>')
+  group
+  .command('mint-invite <contract> <series> <tokenId>')
   .description("generates an mintWithInvite packet for the Bubble NFT contract with a 28-day expiry (use -e to change expiry)" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-e, --expiry <expiryTime>', 'expiry duration in the form 12h (12 hours) or 7d (7days)')
@@ -35,8 +39,8 @@ function registerCommands(program, errorHandler) {
   });
 
   // GENERATEMINTNEXTINVITATION Command
-  program
-  .command('nft.mint-next-invite <contract> <series>')
+  group
+  .command('mint-next-invite <contract> <series>')
   .description("generates an mintNextWithInvite packet for the Bubble NFT contract with a 28-day expiry (use -e to change expiry)" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-e, --expiry <expiryTime>', 'expiry duration in the form 12h (12 hours) or 7d (7days)')
@@ -72,7 +76,7 @@ function mintNft(contractAddress, series, tokenId, recipientAddress, options) {
   const tokenIdHex = _paramToHex(tokenId, 32, "tokenId");
   const recipient = addressBook.parseAddress(recipientAddress);
   if (!datona.assertions.isAddress(recipient)) throw new Error('invalid recipient address');
-  return BlockchainTools.transactContract(contractAddress, 'mint', [seriesHex, tokenIdHex, recipientAddress], {...options, abi: BubbleNFTAbi})
+  return BlockchainTools.transactContract(contractAddress, 'mint', [seriesHex, tokenIdHex, recipient], {...options, abi: BubbleNFTAbi})
 }
 
 function generateMintInvitation(contractAddress, series, tokenId, options={}) {

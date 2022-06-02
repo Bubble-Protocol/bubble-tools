@@ -7,10 +7,7 @@
  */
 
 // Modules
-import Commander from 'commander';
-import datona from 'datona-lib';
-import wallet from "./modules/wallet/wallet.mjs";
-import StringUtils from './utils/string-utils.mjs';
+import * as Commander from 'commander';
 import './utils/log.js';
 
 import WalletTools from './modules/wallet/wallet-tools.mjs';
@@ -23,15 +20,14 @@ import CryptoTools from './modules/crypto/crypto-tools.mjs';
 import ImageTools from './modules/image/image-tools.mjs';
 
 // Constants
-const program = new Commander.Command("bubble");
+const program = new Commander.Command();
 
 // MAIN
 
 program
 	.version('0.1.1-alpha')
 	.usage('<command> [options] [args]   # Try datona <command> --help')
-	.option('-v, --verbose', 'trace and debug output')
-	.parse(process.argv);
+	.option('-v, --verbose', 'trace and debug output');
 
 if (program.opts().verbose) {
 	console.enable("trace")
@@ -42,29 +38,27 @@ WalletTools.registerCommands(program, exitWithError);
 AddressTools.registerCommands(program, exitWithError);
 BubbleTools.registerCommands(program, exitWithError);
 BlockchainTools.registerCommands(program, exitWithError);
-DIDTools.registerCommands(program, exitWithError);
-CryptoTools.registerCommands(program, exitWithError);
-ImageTools.registerCommands(program, exitWithError);
 NFTTools.registerCommands(program, exitWithError);
 
-// GETREQUEST Command
-program
-	.command('connectToBubble')
-	.description('returns the request to paste into your Bubble Dashboard to connect this app to your bubble')
-	.action(function(){
-		const key = wallet.hasApplicationKey() ? wallet.getApplicationKey() : wallet.createApplicationKey();
-		if (key) {
-			const publicKeyB58 = StringUtils.hexToBase58(datona.crypto.uint8ArrayToHex(key.publicKey));
-			console.log("Paste the following request into your Bubble Dashboard:");
-			console.log("WcUuFpWX1qTB3VrgHnECFr7c6Xc1YnQZAoZQPW5YenzF5CvjrHFDQkwHzvrsKRsiQkXJ3v2yR6tBWwk48cTK6eoBRx4aCWBn3mykepqKLSPMG35bEhjW9uVFi1pxkhzAoDSWNTEoSDTQpUN6He8cXgyV5gZgHXNgwceQNXxQuK5BApcLjvupHCRtFqcFr4jGWeeBoi9BcB2NFnUhWJUHStkoNocZVHy9zFpm&publicKey="+publicKeyB58);
-		}
-	});
+const utils = program
+.command('utils')
+.description("general utility functions" );
+
+BubbleTools.registerUtils(utils, exitWithError);
+DIDTools.registerCommands(utils, exitWithError);
+CryptoTools.registerCommands(utils, exitWithError);
+ImageTools.registerCommands(utils, exitWithError);
 
 // CATCH ALL
 program
   .on('command:*', function () {
   console.error('Invalid command.\nSee --help for a list of available commands.', program.args.join(' '));
   process.exit(1);
+});
+
+// Configure help
+utils.configureHelp({
+  sortSubcommands: true
 });
 
 // PROCESS & RUN COMMAND

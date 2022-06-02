@@ -5,9 +5,13 @@ import { readFile } from "../../utils/file-utils.mjs";
 
 function registerCommands(program, errorHandler) {
 
+  const group = program
+    .command('contract')
+    .description("deploy, terminate, transact and call smart contracts" );
+
   // TERMINATECONTRACT Command
-  program
-    .command('contract.terminate <contract>')
+  group
+    .command('terminate <contract>')
     .description("terminates the given SDAC" )
     .option('-k, --key <key>', 'wallet key to use to sign the transaction')
     .action(function(contract, options){
@@ -19,8 +23,8 @@ function registerCommands(program, errorHandler) {
     });
 
   // CALLCONTRACT Command
-  program
-    .command('contract.call <contract> <method> [args...]')
+  group
+    .command('call <contract> <method> [args...]')
     .description('calls the given pure or view method of the given contract. Assumes the contract is an SDAC unless the contract source code is given with the --abi or --file option')
     .option('-a, --abi <abi>', 'abi of contract (in json format)')
     .option('-f, --file <sourceCodeFile>', 'json file containing an object with at least the abi, i.e. {"abi": [...], ...}')
@@ -34,8 +38,8 @@ function registerCommands(program, errorHandler) {
     });
 
   // TRANSACTCONTRACT Command
-  program
-    .command('contract.transact <contract> <method> [args...]')
+  group
+    .command('transact <contract> <method> [args...]')
     .description('transacts with the given method of the given contract. Assumes the contract is an SDAC unless the contract source code is given with the --abi or --file option')
     .option('-k, --key <key>', 'wallet key to use to sign the transaction')
     .option('-a, --abi <abi>', 'abi of contract (in json format)')
@@ -102,7 +106,7 @@ function callContract(contractStr, method, args, options) {
 
 function transactContract(contractStr, method, args, options={}) {
   const contractAddress = addressBook.parseAddress(contractStr);
-  const abi = options.abi ? JSON.parse(options.abi) : (options.file ? JSON.parse(readFile(options.file, "source code file")).abi : sdacAbi.v1);
+  const abi = options.abi || (options.file ? JSON.parse(readFile(options.file, "source code file")).abi : sdacAbi.v1);
   if (!abi) throw new Error("abi or source code file is invalid");
   const expandedArgs = options.noexpand ? args : _expandAddresses(args);
   const key = wallet.getApplicationKey(options.key);
