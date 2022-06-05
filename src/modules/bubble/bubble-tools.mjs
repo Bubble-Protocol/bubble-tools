@@ -14,6 +14,7 @@ function registerCommands(program, errorHandler) {
   // CREATEVAULT Command
   group
   .command('create')
+  .summary("creates a vault")
   .description("creates a vault on the given vault server controlled by the given smart data access contract" )
   .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
@@ -31,6 +32,7 @@ function registerCommands(program, errorHandler) {
   // DELETEVAULT Command
   group
   .command('deleteVault')
+  .summary("deletes a vault")
   .description("deletes the given vault server controlled by the given smart data access contract" )
   .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
@@ -47,6 +49,7 @@ function registerCommands(program, errorHandler) {
   // READVAULT Command
   group
   .command('read')
+  .summary("reads a vault file or lists a vault directory")
   .description("reads the given vault file and dumps the content to the console" )
   .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
@@ -65,6 +68,7 @@ function registerCommands(program, errorHandler) {
   // WRITEVAULT Command
   group
   .command('write')
+  .summary("writes a file or data to a vault file or directory")
   .description("writes the given file (or data if using the --data option) to the given vault and filename" )
   .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
@@ -82,9 +86,31 @@ function registerCommands(program, errorHandler) {
     catch(error) { errorHandler(error) }
   });
 
+  // APPENDVAULT Command
+  group
+  .command('append')
+  .summary("appends a file or data to a vault file or directory")
+  .description("appends the given file (or data if using the --data option) to the given vault and filename" )
+  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<contract>', "an address book label or an Ethereum address" )
+  .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
+  .argument('[file]', "the file to write" )
+  .option('--data <string>', 'string data to write instead of a file')
+  .option('-k, --key <key>', 'wallet key to use to sign the transaction')
+  .option('-l, --toLowerCase', 'make contract address lowercase')
+  .action(function(server, contract, filename, file, options){
+    try{
+      appendVault(server, contract, filename, file, options)
+        .then(console.log)
+        .catch(errorHandler);
+    }
+    catch(error) { errorHandler(error) }
+  });
+
   // DELETEVAULTFILE Command
   group
   .command('delete')
+  .summary("deletes a vault file")
   .description("deletes the given file with the given vault and filename" )
   .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
@@ -251,6 +277,19 @@ function writeVault(server, contract, filename, file, options={}) {
   }
   console.trace('writeVault', JSON.stringify(params.server), params.contract, params.filename, options);
   return params.vault.write(data, params.filename);
+}
+
+function appendVault(server, contract, filename, file, options={}) {
+  const params = validateVaultParams(server, contract, filename, options);
+  let data = options.data;
+  if (file && data) throw new Error('cannot append both file and data');
+  if (!file && !data) throw new Error('missing file or data string');
+  if (file) {
+    if (!fs.existsSync(file)) throw new Error('file does not exist');
+    data = fs.readFileSync(file).toString();
+  }
+  console.trace('appendVault', JSON.stringify(params.server), params.contract, params.filename, options);
+  return params.vault.append(data, params.filename);
 }
 
 function deleteVaultFile(server, contract, filename, options={}) {
