@@ -18,7 +18,7 @@ function registerCommands(program, errorHandler) {
     .option('-k, --key <key>', 'wallet key to use to sign the transaction')
     .option('-a, --abi <abi>', 'abi of contract (in json format)')
     .option('-b, --bytecode <bytecode>', 'bytecode of contract (hex string)')
-    .option('-f, --file <sourceCodeFile>', 'json file containing an object with the abi and bytecode, i.e. {"abi": [...], "bytecode": "..."}')
+    .option('-f, --file <sourceCodeFile>', 'json file containing an object with the abi and bytecode.  Accepts the standard compiler output or a flattened version {"abi": [...], "bytecode": "..."}')
     .option('-s, --save <label>', 'save the deployed contract address to the address book with the given label')
     .option('-m, --memo <label>', 'use in conjunction with -s to save the deployed contract address with the given memo')
     .action(function(contract, args, options){
@@ -107,7 +107,7 @@ function deployContract(args, options={}) {
   setProvider();
   const sourceCode = options.file ? readFile(options.file, 'source code file', {json: true}) : {};
   const abi = options.abi || sourceCode.abi || sdacAbi.v1;
-  let bytecode = options.bytecode || sourceCode.bytecode;
+  let bytecode = options.bytecode || sourceCode.bytecode || sourceCode.data && sourceCode.data.bytecode ? sourceCode.data.bytecode.object : undefined;
   if (!bytecode) throw new Error("missing bytecode");
   if (bytecode.startsWith('0x')) bytecode = bytecode.substring(2);
   const expandedArgs = options.noexpand ? args : _expandAddresses(args);
@@ -126,8 +126,8 @@ function deployContract(args, options={}) {
           console.trace(error);
           console.error('deployed contract but failed to save address:', error.message);
         }
-        return address;
       }
+      return address;
     });
 }
 
