@@ -138,6 +138,7 @@ function parseServer(serverStr, silent=true, descriptiveName='server') {
 
 function parseAddress(addressStr, silent=true, descriptiveName='address') {
   if (!addressStr) return undefined;
+  datona.assertions.isString(addressStr, "address");
   if (datona.assertions.isAddress(addressStr)) return addressStr;
   const parts = addressStr.split('/');
   if (parts.length !== 1) {

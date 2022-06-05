@@ -1,3 +1,4 @@
+import { getBalance } from "../blockchain/blockchain.mjs";
 import wallet from "./wallet.mjs";
 
 function registerCommands(program, errorHandler) {
@@ -76,6 +77,21 @@ function registerCommands(program, errorHandler) {
     .action(function(){
       try{
         wallet.resetDefaultKey();
+      }
+      catch(error) { errorHandler(error) }
+    });
+
+  // GETBALANCE Command
+  group
+    .command('balance')
+    .description("displays the balance of a key or address" )
+    .argument('[labelOrAddress]', "key label or account address.  If not given the default application key is used")
+    .action(function(labelOrAddress){
+      try{
+        const addressStr = labelOrAddress || wallet.getApplicationKey().address;
+        getBalance(addressStr)
+        .then(console.log)
+        .catch(error => { errorHandler(error) })
       }
       catch(error) { errorHandler(error) }
     });

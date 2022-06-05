@@ -11,7 +11,7 @@ function checkApplicationDir() {
   }
 }
 
-function getApplicationKey(label='default-key') {
+export function getApplicationKey(label='default-key') {
 	try {
     if (!fs.existsSync(WALLET_DIR+'/default-key')) throw new Error('key does not exist');
 		const privateKey = fs.readFileSync(WALLET_DIR+'/'+label, {encoding: 'utf8'});
