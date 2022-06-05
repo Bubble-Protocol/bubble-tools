@@ -230,12 +230,12 @@ function base58ToHex(address) {
 
 function uintToHex(val, byteLength) {
   if (!val) return undefined;
-  const baseHex = '0x'+'00'.repeat(byteLength)
-  if (param.startsWith('0x')) return (baseHex+param.substring(2)).slice(-byteLength*2);
+  const baseHex = '00'.repeat(byteLength)
+  if (val.startsWith('0x')) return '0x'+(baseHex+val.substring(2)).slice(-byteLength*2);
   else {
-    const intParam = parseInt(param);
-    if (isNaN(intParam)) return undefined;
-    return (baseHex+intParam.toString(16)).slice(-byteLength*2);
+    const intVal = parseInt(val);
+    if (isNaN(intVal)) return undefined;
+    return '0x'+(baseHex+intVal.toString(16)).slice(-byteLength*2);
   }
 }
 

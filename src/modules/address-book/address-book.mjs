@@ -148,7 +148,6 @@ function parseAddress(addressStr, silent=true, descriptiveName='address') {
   }
   const addresses = getAddressBook();
   addresses.push(...wallet.listKeys(addressStr));
-  console.debug(addresses);
   let address = addresses.find(a => { return a.label === addressStr.toLowerCase() });
   if (address) {
     address = address.address;

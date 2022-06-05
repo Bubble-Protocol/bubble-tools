@@ -78,7 +78,7 @@ function mintNft(contractAddress, series, tokenId, recipientAddress, options) {
   const tokenIdHex = _paramToHex(tokenId, 32, "tokenId");
   const recipient = addressBook.parseAddress(recipientAddress);
   if (!datona.assertions.isAddress(recipient)) throw new Error('invalid recipient address');
-  return BlockchainTools.transactContract(contractAddress, 'mint', [seriesHex, tokenIdHex, recipient], {...options, abi: BubbleNFTAbi})
+  return BlockchainTools.transactContract(contractAddress, 'mint', [seriesHex, tokenIdHex, recipient], {...options, abi: BubbleNFTAbi, noexpand: true})
 }
 
 function generateMintInvitation(contractAddress, series, tokenId, options={}) {
@@ -200,4 +200,5 @@ function _paramToHex(param, byteLength, descriptiveName='parameter') {
   if (!param) throw new Error('missing '+descriptiveName);
   const hex = StringUtils.uintToHex(param, byteLength);
   if (!hex) throw new Error('invalid '+descriptiveName);
+  return hex;
 }
