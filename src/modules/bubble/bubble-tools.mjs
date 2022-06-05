@@ -23,7 +23,7 @@ function registerCommands(program, errorHandler) {
   .action(function(server, contract, options){
     try{
       createVault(server, contract, options)
-        .then(console.log)
+        .then(console.trace)
         .catch(errorHandler);
     }
     catch(error) { errorHandler(error) }
@@ -40,7 +40,7 @@ function registerCommands(program, errorHandler) {
   .action(function(server, contract, options){
     try{
       deleteVault(server, contract, options)
-        .then(console.log)
+        .then(console.trace)
         .catch(errorHandler);
     }
     catch(error) { errorHandler(error) }
@@ -80,7 +80,7 @@ function registerCommands(program, errorHandler) {
   .action(function(server, contract, filename, file, options){
     try{
       writeVault(server, contract, filename, file, options)
-        .then(console.log)
+        .then(console.trace)
         .catch(errorHandler);
     }
     catch(error) { errorHandler(error) }
@@ -101,7 +101,7 @@ function registerCommands(program, errorHandler) {
   .action(function(server, contract, filename, file, options){
     try{
       appendVault(server, contract, filename, file, options)
-        .then(console.log)
+        .then(console.trace)
         .catch(errorHandler);
     }
     catch(error) { errorHandler(error) }
@@ -120,7 +120,7 @@ function registerCommands(program, errorHandler) {
   .action(function(server, contract, filename, options){
     try{
       deleteVaultFile(server, contract, filename, options)
-        .then(console.log)
+        .then(console.trace)
         .catch(errorHandler);
     }
     catch(error) { errorHandler(error) }
