@@ -76,7 +76,7 @@ function registerCommands(program, errorHandler) {
 
 const BlockchainTools = {
   registerCommands: registerCommands,
-  blockchain: blockchain
+  ...blockchain
 }
 
 export default BlockchainTools;
