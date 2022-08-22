@@ -154,7 +154,8 @@ function parseAddress(addressStr, silent=true, descriptiveName='address') {
     address = address.address;
   }
   else {
-    if (addressStr.startsWith('0x')) {
+    if (isBubbleDID(addressStr)) address = new BubbleDIDURL(address).address;
+    else if (addressStr.startsWith('0x')) {
       address = '0x'+("0000000000000000000000000000000000000000"+addressStr.substring(2)).slice(-40);
       if (!datona.assertions.isAddress(address)) address = undefined;
     }
