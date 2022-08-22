@@ -1,3 +1,5 @@
+import datona from "datona-lib";
+import StringUtils from "../../utils/string-utils.mjs";
 import { getBalance } from "../blockchain/blockchain.mjs";
 import wallet from "./wallet.mjs";
 
@@ -92,6 +94,21 @@ function registerCommands(program, errorHandler) {
         getBalance(addressStr)
         .then(console.log)
         .catch(error => { errorHandler(error) })
+      }
+      catch(error) { errorHandler(error) }
+    });
+
+  // GETINFO Command
+  group
+    .command('info')
+    .description("displays information about a key" )
+    .argument('<key>', "private key (in hex)")
+    .option('-p, --public-key', "display public key")
+    .action(function(keyStr, options){
+      try{
+        const key = wallet.getInfo(keyStr);
+        const publicKey = options.publicKey ? '\t'+key.publicKey : '';
+        console.log(key.address+publicKey);
       }
       catch(error) { errorHandler(error) }
     });

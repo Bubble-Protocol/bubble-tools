@@ -79,6 +79,16 @@ function listKeys(label) {
   })
 }
 
+function getInfo(keyStr) {
+  try {
+    const key = new datona.crypto.Key(keyStr);
+    return {address: key.address, publicKey: '0x'+datona.crypto.uint8ArrayToHex(key.publicKey)}
+  }
+  catch(error) {
+    throw new Error("invalid private key");
+  }
+}
+
 const wallet = {
   getApplicationKey: getApplicationKey,
   addApplicationKey: addApplicationKey,
@@ -87,6 +97,7 @@ const wallet = {
   setApplicationKey: setApplicationKey,
   hasApplicationKey: hasApplicationKey,
   listKeys: listKeys,
+  getInfo: getInfo,
   setDefaultKey: setDefaultKey,
   resetDefaultKey: resetDefaultKey
 }
