@@ -8,21 +8,29 @@ NB, if you connect this application to your bubble then the private key generate
 
 # Usage
 
-```
-$ cd bubble-tools
-$ node src/cli.mjs
-```
-This will display a list of commands.  Each command has subcommands.  Use the following to list the subcommands for a command:
-```
-$ node src/cli.mjs <command>
-```
+## Initialise Your Local Wallet
 
-# Connect To Your Bubble
-
-To connect this application to your Bubble ID so that you can transact as your personas, use the following command and follow the instructions in it's output.
+To initialise your wallet use the following command.
 
 ```
 node src/cli.mjs wallet connectToBubble
+```
+## Connect To Your Bubble
+
+The output of the `connectToBubble` command above includes a request code to paste into your Bubble Dashboard.  This will connect the application to your Bubble ID letting you transact as your personas using the application's local private key.
+
+**NB: If you authorise the request, Bubble Tools will be given admin rights over your personas.  For security, it is recommended you disable Bubble Tools in your dashboard when not using it and only enable it when you need it.**
+
+## List All Commands
+
+```
+$ node src/cli.mjs
+```
+
+This will display a list of commands.  Each command has subcommands.  Use the following to list the subcommands for a command:
+
+```
+$ node src/cli.mjs <command>
 ```
 # Credits
 

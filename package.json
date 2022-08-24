@@ -13,5 +13,11 @@
     "net": "^1.0.2",
     "stream": "^0.0.2"
   },
-  "scripts": {}
+  "scripts": {
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0"
+  }
 }

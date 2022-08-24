@@ -2,18 +2,19 @@ import datona from "datona-lib";
 import fs from 'fs';
 import {APP_DIR} from "../../config.mjs";
 
-const WALLET_DIR = APP_DIR+'/wallet';
+let DEFAULT_APP_DIR = APP_DIR;
+let WALLET_DIR = DEFAULT_APP_DIR+'/wallet';
 
 function checkApplicationDir() {
-  if (!fs.existsSync(APP_DIR)) {
-    fs.mkdirSync(APP_DIR, {recursive: true});
-    fs.chmodSync(APP_DIR, 0o700);
+  if (!fs.existsSync(DEFAULT_APP_DIR)) {
+    fs.mkdirSync(DEFAULT_APP_DIR, {recursive: true});
+    fs.chmodSync(DEFAULT_APP_DIR, 0o700);
   }
 }
 
 export function getApplicationKey(label='default-key') {
 	try {
-    if (!fs.existsSync(WALLET_DIR+'/default-key')) throw new Error('key does not exist');
+    if (!fs.existsSync(WALLET_DIR+'/'+label)) throw new Error('key does not exist');
 		const privateKey = fs.readFileSync(WALLET_DIR+'/'+label, {encoding: 'utf8'});
 		return new datona.crypto.Key(privateKey);
 	}
@@ -31,11 +32,12 @@ function createApplicationKey(label) {
 function setApplicationKey(privateKey, label='default-key', force=false) {
   checkApplicationDir();
   if (!fs.existsSync(WALLET_DIR)) fs.mkdirSync(WALLET_DIR, {recursive: true});
+  if (label === 'initial-application-key') throw new Error('cannot overwrite the initial-application-key - it connects this installation to your Bubble');
   if (!force && hasApplicationKey(label)) {
     throw new Error("application key '"+label+"' already exists");
   };
   fs.writeFileSync(WALLET_DIR+'/'+label, privateKey);
-  if (label === 'default-key') fs.writeFileSync(WALLET_DIR+'/initial-application-key', privateKey);
+  if (label === 'default-key' && !hasApplicationKey('initial-application-key')) fs.writeFileSync(WALLET_DIR+'/initial-application-key', privateKey);
   return true;
 }
 
@@ -81,6 +83,7 @@ function listKeys(label) {
 
 function getInfo(keyStr) {
   try {
+    if (keyStr && keyStr.startsWith('0x')) keyStr = keyStr.substring(2);
     const key = new datona.crypto.Key(keyStr);
     return {address: key.address, publicKey: '0x'+datona.crypto.uint8ArrayToHex(key.publicKey)}
   }
@@ -88,6 +91,12 @@ function getInfo(keyStr) {
     throw new Error("invalid private key");
   }
 }
+
+function testPoint(appDir) {
+  DEFAULT_APP_DIR = appDir;
+  WALLET_DIR = appDir+'/wallet';
+}
+
 
 const wallet = {
   getApplicationKey: getApplicationKey,
@@ -99,7 +108,8 @@ const wallet = {
   listKeys: listKeys,
   getInfo: getInfo,
   setDefaultKey: setDefaultKey,
-  resetDefaultKey: resetDefaultKey
+  resetDefaultKey: resetDefaultKey,
+  testPoint: testPoint
 }
 
 export default wallet;
