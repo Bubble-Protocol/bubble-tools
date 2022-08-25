@@ -7,7 +7,8 @@ const TEST_KEYS = {
   key1: {
     privateKey: 'bf2ab3d3f4d017b1775dfae180da93d8bb6c4306327ec2bf24f92c8604440945',
     publicKey: '0x04ba032b6edcab16b0eb13e77891af30a8546c68ff4de508703623a1169dbaebcf87f27afc157f5c940092abd1c7060089b15ccf4104058fc0de8fe92a0f8181fc',
-    address: '0x4e16dd537432447fb9cec2726252accb4514abae'
+    address: '0x4e16dd537432447fb9cec2726252accb4514abae',
+    did: 'did:bubble:11266kMKUHrQfZKGz2CuQwFsFWx4xd'
   },
   key2: {
     privateKey: 'c98ef00c9c97dfd3c690bb07c85cba7f8ceabfb789454487d89c14b799c3ac58',

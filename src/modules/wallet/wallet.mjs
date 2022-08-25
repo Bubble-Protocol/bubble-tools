@@ -4,6 +4,8 @@ import {APP_DIR} from "../../config.mjs";
 
 let DEFAULT_APP_DIR = APP_DIR;
 let WALLET_DIR = DEFAULT_APP_DIR+'/wallet';
+const DEFAULT_KEY = 'default-key';
+const INITIAL_KEY = 'initial-application-key';
 
 function checkApplicationDir() {
   if (!fs.existsSync(DEFAULT_APP_DIR)) {
@@ -12,7 +14,7 @@ function checkApplicationDir() {
   }
 }
 
-export function getApplicationKey(label='default-key') {
+export function getApplicationKey(label=DEFAULT_KEY) {
 	try {
     if (!fs.existsSync(WALLET_DIR+'/'+label)) throw new Error('key does not exist');
 		const privateKey = fs.readFileSync(WALLET_DIR+'/'+label, {encoding: 'utf8'});
@@ -29,15 +31,15 @@ function createApplicationKey(label) {
   return success ? key : undefined;
 }
 
-function setApplicationKey(privateKey, label='default-key', force=false) {
+function setApplicationKey(privateKey, label=DEFAULT_KEY, force=false) {
   checkApplicationDir();
   if (!fs.existsSync(WALLET_DIR)) fs.mkdirSync(WALLET_DIR, {recursive: true});
-  if (label === 'initial-application-key') throw new Error('cannot overwrite the initial-application-key - it connects this installation to your Bubble');
+  if (label === INITIAL_KEY) throw new Error('cannot overwrite the initial-application-key - it connects this installation to your Bubble');
   if (!force && hasApplicationKey(label)) {
     throw new Error("application key '"+label+"' already exists");
   };
   fs.writeFileSync(WALLET_DIR+'/'+label, privateKey);
-  if (label === 'default-key' && !hasApplicationKey('initial-application-key')) fs.writeFileSync(WALLET_DIR+'/initial-application-key', privateKey);
+  if (label === DEFAULT_KEY && !hasApplicationKey(INITIAL_KEY)) fs.writeFileSync(WALLET_DIR+'/initial-application-key', privateKey);
   return true;
 }
 
@@ -50,13 +52,13 @@ function addApplicationKey(label, privateKey) {
 function removeApplicationKey(label) {
   datona.assertions.isString(label, "label");
   label = label.toLowerCase();
-  if (label === 'default-key') throw new Error('cannot delete the default-key.  Use wallet.setDefault instead');
-  if (label === 'initial-application-key') throw new Error('cannot delete the initial-application-key - it connects this installation to your Bubble');
+  if (label === DEFAULT_KEY) throw new Error('cannot delete the default-key.  Use wallet.setDefault instead');
+  if (label === INITIAL_KEY) throw new Error('cannot delete the initial-application-key - it connects this installation to your Bubble');
   if (!fs.existsSync(WALLET_DIR+'/'+label)) throw new Error('key does not exist');
   fs.unlinkSync(WALLET_DIR+'/'+label);
 }
 
-function setDefaultKey(label='initial-application-key') {
+function setDefaultKey(label=INITIAL_KEY) {
   label = label.toLowerCase();
   if (!fs.existsSync(WALLET_DIR+'/'+label)) throw new Error('key does not exist');
   fs.copyFileSync(WALLET_DIR+'/'+label, WALLET_DIR+'/default-key');
@@ -66,7 +68,7 @@ function resetDefaultKey() {
   setDefaultKey();
 }
 
-function hasApplicationKey(label='default-key') {
+function hasApplicationKey(label=DEFAULT_KEY) {
   return fs.existsSync(WALLET_DIR+'/'+label);
 }
 
