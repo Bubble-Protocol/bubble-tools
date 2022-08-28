@@ -2,6 +2,7 @@ import {assert, expect} from 'chai';
 import wallet from '../src/modules/wallet/wallet.mjs';
 import fs from 'fs';
 import datona from 'datona-lib';
+import '../src/utils/log.js';
 
 const TEST_KEYS = {
   key1: {
