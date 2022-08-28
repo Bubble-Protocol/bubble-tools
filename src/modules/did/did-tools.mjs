@@ -30,11 +30,11 @@ function registerCommands(program) {
 
   // CREATE Command
   group
-  .command('create <address> [url] [id] [file]')
+  .command('create <address> [url] [file]')
   .summary('generates a bubble DID')
-  .description('generates a plain DID for the given ethereum address, vault server url, vault server id (address) and vault file')
-  .action(function(address, url, id, file){
-    console.log(create(address, url, id, file));
+  .description('generates a plain DID for the given ethereum address, vault server label or url (url must include the server id) and vault file')
+  .action(function(address, url, file){
+    console.log(create(address, url, file));
   });
 
 }

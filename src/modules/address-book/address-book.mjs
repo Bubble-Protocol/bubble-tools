@@ -1,12 +1,13 @@
 import datona from "datona-lib";
 import fs from 'fs';
-import {APP_DIR} from "../../config.mjs";
+import {APP_DIR as CONFIGURED_APP_DIR} from "../../config.mjs";
 import { BubbleDIDURL, isBubbleDID } from "../../utils/bubble-utils.mjs";
 import wallet from "../wallet/wallet.mjs";
 
-const SERVERS_FILE = APP_DIR+'/servers';
-const ADDRESSES_FILE = APP_DIR+'/addresses';
-
+let APP_DIR;
+let SERVERS_FILE;
+let ADDRESSES_FILE;
+setAppDir(CONFIGURED_APP_DIR);
 
 function checkApplicationDir() {
   if (!fs.existsSync(APP_DIR)) {
@@ -47,7 +48,6 @@ function addServer(label, url, id) {
   label = label.toLowerCase();
   url = url.toLowerCase();
   if (servers.findIndex(s => {return s.label === label}) >= 0) throw new Error("server with that label already exists");
-  if (servers.findIndex(s => {return s.url === url}) >= 0) throw new Error("server with that url already exists");
   servers.push({label: label, url: url, id: id});
   servers.sort((a,b) => { return a.label.localeCompare(b.label) });
   writeServers(servers);
@@ -93,7 +93,7 @@ function addAddress(label, address, memo, options={}) {
   if (options.toLowerCase) address = address.toLowerCase();
   const addresses = getAddressBook();
   label = label.toLowerCase();
-  if (addresses.findIndex(s => {return s.label === label}) >= 0) throw new Error("server with that label already exists");
+  if (addresses.findIndex(s => {return s.label === label}) >= 0) throw new Error("address with that label already exists");
   addresses.push({label: label, address: address, memo: memo});
   addresses.sort((a,b) => { return a.label.localeCompare(b.label) });
   writeAddressBook(addresses);
@@ -137,8 +137,10 @@ function parseServer(serverStr, silent=true, descriptiveName='server') {
 }
 
 function parseAddress(addressStr, silent=true, descriptiveName='address') {
-  if (!addressStr) return undefined;
-  datona.assertions.isString(addressStr, "address");
+  if (!addressStr || !datona.assertions.isString(addressStr)) {
+    if (silent) return undefined;
+    else throw new Error(descriptiveName+' is invalid')
+  }
   if (datona.assertions.isAddress(addressStr)) return addressStr;
   const parts = addressStr.split('/');
   if (parts.length !== 1) {
@@ -147,21 +149,31 @@ function parseAddress(addressStr, silent=true, descriptiveName='address') {
     if (dir) return dir+'/'+parts[1];
     else return undefined;
   }
-  const addresses = getAddressBook();
+  const addresses = [...getAddressBook()];
   addresses.push(...wallet.listKeys(addressStr));
   let address = addresses.find(a => { return a.label === addressStr.toLowerCase() });
   if (address) {
     address = address.address;
   }
   else {
-    if (isBubbleDID(addressStr)) address = new BubbleDIDURL(address).address;
+    if (isBubbleDID(addressStr)) address = new BubbleDIDURL(addressStr).address;
     else if (addressStr.startsWith('0x')) {
-      address = '0x'+("0000000000000000000000000000000000000000"+addressStr.substring(2)).slice(-40);
-      if (!datona.assertions.isAddress(address)) address = undefined;
+      if (addressStr.length === 2 || addressStr.length > 42) {
+        if (silent) address = undefined;
+        else throw new Error(descriptiveName+' is invalid')
+      }
+      else {
+        address = '0x'+("0000000000000000000000000000000000000000"+addressStr.substring(2)).slice(-40);
+        if (!datona.assertions.isAddress(address)) address = undefined;
+      }
     }
     else {
-      const intAddress = parseInt(addressStr);
+      const intAddress = parseInt(addressStr, 10);
       if (isNaN(intAddress)) {
+        if (silent) address = undefined;
+        else throw new Error(descriptiveName+' is invalid')
+      }
+      else if (!/^\d+$/.test(addressStr)) {
         if (silent) address = undefined;
         else throw new Error(descriptiveName+' is invalid')
       }
@@ -177,6 +189,17 @@ function parseAddress(addressStr, silent=true, descriptiveName='address') {
   return address;
 }
 
+function setAppDir(appDir) {
+  APP_DIR = appDir;
+  SERVERS_FILE = APP_DIR+'/servers';
+  ADDRESSES_FILE = APP_DIR+'/addresses';
+}
+
+function testPoint(appDir) {
+  localAddressBook = undefined;
+  localServers = undefined;
+  if (appDir) setAppDir(appDir);
+}
 
 
 const addressBook = {
@@ -187,7 +210,8 @@ const addressBook = {
   getServers: getServers,
   addServer: addServer,
   removeServer: removeServer,
-  parseServer: parseServer
+  parseServer: parseServer,
+  testPoint: testPoint
 }
 
 export default addressBook;
