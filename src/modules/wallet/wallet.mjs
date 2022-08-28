@@ -1,16 +1,17 @@
 import datona from "datona-lib";
 import fs from 'fs';
-import {APP_DIR} from "../../config.mjs";
+import {APP_DIR as CONFIGURED_APP_DIR} from "../../config.mjs";
 
-let DEFAULT_APP_DIR = APP_DIR;
-let WALLET_DIR = DEFAULT_APP_DIR+'/wallet';
+let APP_DIR;
+let WALLET_DIR;
+setAppDir(CONFIGURED_APP_DIR);
 const DEFAULT_KEY = 'default-key';
 const INITIAL_KEY = 'initial-application-key';
 
 function checkApplicationDir() {
-  if (!fs.existsSync(DEFAULT_APP_DIR)) {
-    fs.mkdirSync(DEFAULT_APP_DIR, {recursive: true});
-    fs.chmodSync(DEFAULT_APP_DIR, 0o700);
+  if (!fs.existsSync(APP_DIR)) {
+    fs.mkdirSync(APP_DIR, {recursive: true});
+    fs.chmodSync(APP_DIR, 0o700);
   }
 }
 
@@ -94,9 +95,13 @@ function getInfo(keyStr) {
   }
 }
 
-function testPoint(appDir) {
-  DEFAULT_APP_DIR = appDir;
+function setAppDir(appDir) {
+  APP_DIR = appDir;
   WALLET_DIR = appDir+'/wallet';
+}
+
+function testPoint(appDir) {
+  if (appDir) setAppDir(appDir);
 }
 
 
