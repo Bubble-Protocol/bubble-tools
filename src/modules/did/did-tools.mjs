@@ -58,8 +58,13 @@ export function decode(did) {
 }
 
 export function create(addressStr, serverStr, fileStr) {
+  if (!addressStr) throw new Error('address is missing');
+  if (!serverStr && fileStr) throw new Error('server is missing');
   const address = addressBook.parseAddress(addressStr);
-  const server = addressBook.parseServer(serverStr, false);
-  const file = addressBook.parseAddress(fileStr, false, "file");
+  const server = addressBook.parseServer(serverStr);
+  const file = addressBook.parseAddress(fileStr);
+  if (!address) throw new Error('address is invalid');
+  if (!server && fileStr) throw new Error('server is invalid');
+  if (!file && serverStr) throw new Error('file is invalid');
   return createDID(address, server, file);
 }

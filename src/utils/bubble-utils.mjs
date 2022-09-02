@@ -96,7 +96,7 @@ export class BubbleUrl extends URL {
 
   constructor(url) {
     super(url);
-    if (this.protocol !== "bubble:") throw new Error("not a Bubble URL");
+    if (this.protocol !== "bubble:") throw new Error("Invalid Bubble URL");
     this.specificIdentifier = this.pathname;
     if (this.specificIdentifier.length < 3) throw new Error("invalid Bubble DID/URL - specific identifier is too short");
     this.version = StringUtils.base58ToUint(this.specificIdentifier.substring(0,2));
@@ -151,8 +151,9 @@ BubbleUrl.fromAddress = (address, vaultServer, file) => {
  export class BubbleDIDURL extends BubbleUrl {
 
   constructor(did) {
-    if (!did.startsWith("did:")) throw new Error("not a DID");
+    if (!did || !did.substring) throw new Error("Invalid URL");
     super(did.substring(4));
+    if (!did.startsWith("did:")) throw new Error("Invalid DID URL");
     this.method = this.protocol;
     this.protocol = "did:";
     this.did = did;
