@@ -114,15 +114,20 @@ function writeAddressBook(addresses) {
   localAddressBook = addresses;
 }
 
-function parseServer(serverStr, silent=true, descriptiveName='server') {
-  if (!serverStr) return undefined;
+function parseServer(serverStr, silent=true, descriptiveName='url') {
+  if (!serverStr) {
+    if (silent) return undefined;
+    else throw new Error(descriptiveName+' is missing')
+  }
   const servers = getServers();
   let server = servers.find(s => {return s.label === serverStr.toLowerCase()});
   if (!server) {
     try {
       const url = new URL(serverStr)
-      const id = parseAddress((new URLSearchParams(url.search)).get('id'));
-      datona.assertions.isAddress(id, 'id');
+      const idStr = (new URLSearchParams(url.search)).get('id');
+      if (!idStr) throw new Error('id is missing');
+      const id = parseAddress(idStr);
+      if (!datona.assertions.isAddress(id)) throw new Error('invalid id');
       server = {
         url: url.protocol+'//'+url.host+url.pathname,
         id: id

@@ -5,32 +5,29 @@ import '../src/utils/log.js';
 import wallet from '../src/modules/wallet/wallet.mjs';
 
 const TEST_ADDRESSES = {
+  key1: {
+    label: 'key1',
+    address: '0x4e16dd537432447fb9cec2726252accb4514abae',
+    memo: 'key1 address from wallet'
+  },
   address1: {
     label: 'address1',
-    privateKey: 'bf2ab3d3f4d017b1775dfae180da93d8bb6c4306327ec2bf24f92c8604440945',
-    publicKey: '0x04ba032b6edcab16b0eb13e77891af30a8546c68ff4de508703623a1169dbaebcf87f27afc157f5c940092abd1c7060089b15ccf4104058fc0de8fe92a0f8181fc',
-    address: '0x4e16dd537432447fb9cec2726252accb4514abae',
-    did: 'did:bubble:11266kMKUHrQfZKGz2CuQwFsFWx4xd',
+    address: '0x1111111111111111111111111111111111111111',
+    did: 'did:bubble:11EnrGHeqCd5UQ2jTW2Mo32o6a2GG',
     memo: 'this is address 1'
   },
   address2: {
     label: 'address2',
-    privateKey: 'c98ef00c9c97dfd3c690bb07c85cba7f8ceabfb789454487d89c14b799c3ac58',
-    publicKey: '0x04f3c694cb873d84a82a8777081c6b1e004b860574748560d20a963020fd874b4849bed7464dcbc300e8f60b0291636acfceda7b4a968ce87513df450557de0969',
-    address: '0x72e05725cd2d1fd3fb5df419d33c4cadc69fdfaf',
+    address: '0x2222222222222222222222222222222222222222',
     memo: 'this is address 2'
   },
   address3: {
     label: 'address3',
-    privateKey: 'aa5b21038ce72b9e52e274125ddc485c7da64f7f977ab0c15122b0674f3be46e',
-    publicKey: '0x0464b184a4263e9845d032f070fc0144dd915502a5a76155dbb4707f4bd6c29df730556d209211e8460c5b50335b3731c7cee8385cce4d87842e2671b9af78ede3',
-    address: '0xf34f78d14de047253f7f3f58206666e1ce3dfefc',
+    address: '0x3333333333333333333333333333333333333333',
     memo: 'this is address 3'
   },
   tempAddress: {
     label: 'temp',
-    privateKey: 'e6e9b7d27d8c73c45b2e82f77ba05b001d8449a17d2b666add4610bd238c95a3',
-    publicKey: '',
     address: '0x61f05023348c82b41509ebff37353f1bc8cfa480',
     checksumAddress: '0x61F05023348C82B41509ebFf37353f1BC8cFA480',
     did: 'did:bubble:112N91mXn9hXDPzRhLePfieUoxwyyH',
@@ -464,30 +461,41 @@ describe('Address Book', () => {
       assert.strictEqual(server.id, TEST_SERVERS.server1.id);
     })
 
-    it('returns undefined if url is invalid', () => {
-      const url = 'invalid url'
-      const server = addressBook.parseServer(url+'?id='+TEST_SERVERS.server1.id);
-      assert.isUndefined(server);
+    it('rejects if url is missing', () => {
+      expect(() => {
+        addressBook.parseServer(undefined, false);
+      })
+      .to.throw('url is missing');
     })
 
-    it('returns undefined if id is missing', () => {
-      const url = TEST_SERVERS.server1.url+'/path1/path2'
-      const server = addressBook.parseServer(url);
-      assert.isUndefined(server);
-    })
-
-    it('returns undefined if id is invalid', () => {
-      const url = TEST_SERVERS.server1.url+'/path1/path2'
-      const server = addressBook.parseServer(url+'?id=hello');
-      assert.isUndefined(server);
-    })
-
-    it('throws if silent option is false', () => {
+    it('rejects if url is invalid', () => {
       const url = 'invalid url'
       expect(() => {
         addressBook.parseServer(url+'?id='+TEST_SERVERS.server1.id, false);
       })
-      .to.throw();
+      .to.throw('url is invalid');
+    })
+
+    it('rejects if id is missing', () => {
+      const url = TEST_SERVERS.server1.url+'/path1/path2'
+      expect(() => {
+        addressBook.parseServer(url, false);
+      })
+      .to.throw('url is invalid: id is missing');
+    })
+
+    it('rejects if id is invalid', () => {
+      const url = TEST_SERVERS.server1.url+'/path1/path2'
+      expect(() => {
+        addressBook.parseServer(url+'?id=hello', false);
+      })
+      .to.throw('invalid id');
+    })
+
+    it('returns undefined for invalid url if silent option is not overridden', () => {
+      const url = 'invalid url'
+      const address = addressBook.parseServer(url+'?id='+TEST_SERVERS.server1.id);
+      assert.isUndefined(address);
     })
 
   })
@@ -513,7 +521,7 @@ describe('Address Book', () => {
 
     it('retrieves a wallet address', () => {
       const address = addressBook.parseAddress('key1', false);
-      assert.strictEqual(address, TEST_ADDRESSES.address1.address);
+      assert.strictEqual(address, TEST_ADDRESSES.key1.address);
     })
 
     it('retrieves a did', () => {
@@ -608,9 +616,10 @@ describe('Address Book', () => {
       .to.throw();
     })
 
-    it('returns undefined if default silent option is not overridden', () => {
+    it('returns undefined for invalid address if default silent option is not overridden', () => {
       const addressIn = '0x';
       const address = addressBook.parseAddress(addressIn);
+      assert.isUndefined(address);
     })
 
     it('throws with a specified descriptive name if given', () => {
