@@ -19,7 +19,7 @@ node src/cli.mjs wallet connectToBubble
 
 The output of the `connectToBubble` command above includes a request code to paste into your Bubble Dashboard.  This will connect the application to your Bubble ID letting you transact as your personas using the application's local private key.
 
-**NB: If you authorise the request, Bubble Tools will be given admin rights over your personas.  For security, it is recommended you disable Bubble Tools in your dashboard when not using it and only enable it when you need it.**
+**NB: When you authorise the request, Bubble Tools will be given admin rights over your personas.  For security, it is recommended you disable Bubble Tools in your dashboard when not using it and enable it only when you need it.**
 
 ## List All Commands
 
@@ -32,6 +32,23 @@ This will display a list of commands.  Each command has subcommands.  Use the fo
 ```
 $ node src/cli.mjs <command>
 ```
+
+
+## Configuration
+
+All your addresses, your wallet (including local private keys) and any configuration files are held in the `~/.bubble-tools` directory.
+
+### Change Blockchain Provider
+
+Create or edit the `~/.bubble-tools/provider` file and give your provider url and blockchain in JSON format.  E.g.:
+
+```
+{
+  "blockchain": "ropsten",
+  "blockchainUrl": "https://ropsten.infura.io/v3/YOUR_PROJECT_ID"
+}
+```
+
 # Credits
 
 Powered by Bubble Protocol
