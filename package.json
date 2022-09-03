@@ -1,7 +1,32 @@
 {
-  "name": "bubble-tools",
+  "name": "@bubble-protocol/bubble-tools",
   "version": "0.0.1",
-  "private": true,
+  "description": "Bubble Protocol command line tools.",
+  "bin": {
+    "bubble": "src/cli.js"
+  },
+  "author": "Bubble Protocol",
+  "license": "LGPL",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bubble-Protocol/bubble-tools.git"
+  },
+  "keywords": [
+    "bubble",
+    "bubble protocol",
+    "bubble id",
+    "bubble fs",
+    "smart data access",
+    "proxy id",
+    "web3",
+    "decentralized storage",
+    "digital identity",
+    "blockchain"
+  ],
+  "bugs": {
+    "url": "https://github.com/Bubble-Protocol/bubble-tools/issues"
+  },
+  "homepage": "https://github.com/Bubble-Protocol/bubble-tools#readme",
   "dependencies": {
     "bip32": "^2.0.6",
     "commander": "^9.3.0",
