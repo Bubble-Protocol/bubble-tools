@@ -1,11 +1,13 @@
 # Bubble Tools
 
+[![NPM](https://img.shields.io/npm/v/@bubble-protocol/bubble-tools)](https://www.npmjs.org/package/@bubble-protocol/bubble-tools)
+
 Command line developer tools for [Bubble Protocol](https://bubbleprotocol.com). Lets you use your [Bubble ID](https://datonavault.com/bubble) on the command line to create and manage bubbles, read and write bubble content, interact with access control smart contracts (ACCs), and other utility functions.  
 
 # Installation
 
 ```
-npm install @bubble-protocol/bubble-tools
+npm install -g @bubble-protocol/bubble-tools
 ```
 # Usage
 

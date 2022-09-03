@@ -1,9 +1,9 @@
 {
   "name": "@bubble-protocol/bubble-tools",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Bubble Protocol command line tools.",
   "bin": {
-    "bubble": "src/cli.js"
+    "bubble": "./src/cli.mjs"
   },
   "author": "Bubble Protocol",
   "license": "LGPL",
