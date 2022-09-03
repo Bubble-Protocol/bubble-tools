@@ -49,6 +49,10 @@ Create or edit the `~/.bubble-tools/provider` file and give your provider url an
 }
 ```
 
+### Extend With Your Own Commands
+
+Extend the CLI with your own commands.  Copy [src/modules/user-modules/user-module-template.mjs](./src/modules/user-modules/user-module-template.mjs) to `~/.bubble-tools/modules.mjs` and add your commands.  See the template for more details.
+
 # Credits
 
 Powered by Bubble Protocol

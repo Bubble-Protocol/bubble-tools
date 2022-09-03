@@ -9,15 +9,14 @@
 // Modules
 import * as Commander from 'commander';
 import './utils/log.js';
-
 import WalletTools from './modules/wallet/wallet-tools.mjs';
 import AddressTools from './modules/address-book/address-tools.mjs';
 import BubbleTools from './modules/bubble/bubble-tools.mjs';
 import BlockchainTools from './modules/blockchain/blockchain-tools.mjs';
-import NFTTools from './modules/nft/nft-tools.mjs';
 import DIDTools from './modules/did/did-tools.mjs';
 import CryptoTools from './modules/crypto/crypto-tools.mjs';
 import ImageTools from './modules/image/image-tools.mjs';
+import UserModules from './modules/user-modules/user-modules.mjs';
 
 // Constants
 const program = new Commander.Command();
@@ -40,7 +39,7 @@ AddressTools.registerCommands(program, exitWithError);
 BubbleTools.registerCommands(program, exitWithError);
 BlockchainTools.registerCommands(program, exitWithError);
 DIDTools.registerCommands(program, exitWithError);
-NFTTools.registerCommands(program, exitWithError);
+await UserModules.registerCommands(program, exitWithError);
 
 const utils = program
 .command('utils')
