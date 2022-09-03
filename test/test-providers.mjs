@@ -3,7 +3,7 @@ import fs from 'fs';
 import {getDefaultProvider, testPoint} from '../src/modules/blockchain/providers.mjs';
 import '../src/utils/log.js';
 
-describe.only('Providers', () => {
+describe('Providers', () => {
    
   function checkProvider(provider) {
     assert.isObject(provider, 'provider not an object');
