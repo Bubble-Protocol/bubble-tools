@@ -27,13 +27,13 @@ The output of the `connectToBubble` command above includes a request code to pas
 ## List All Commands
 
 ```
-$ bubble
+bubble
 ```
 
 This will display a list of commands.  Each command has subcommands.  Use the following to list the subcommands for a command:
 
 ```
-$ bubble <command>
+bubble <command>
 ```
 
 
