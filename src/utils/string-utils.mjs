@@ -30,7 +30,7 @@ function stringToUrl(urlStr) {
   try {
     if (!urlStr) throw new Error("url is empty");
     const urlArray = urlStr.charAt(urlStr.length-1) === '/' ? urlStr.substr(0, urlStr.length-1).split(':') : urlStr.split(':');
-    if (urlArray.length<2 || urlArray.length > 3) {
+    if (urlArray.length<2 || urlArray.length > 3 || urlArray[1].match(/\/\/(.*)/) == null || urlArray[1].match(/\/\/(.*)/).length < 2) {
       throw new Error("Invalid url '"+urlStr+"'.  Must be of the form <protocol>://<host>[:<port>]");
     }
     const port = (urlArray.length === 2) ? undefined : parseInt(urlArray[2]);
@@ -41,7 +41,6 @@ function stringToUrl(urlStr) {
     };
   }
   catch(err) {
-    alert(err.message);
     throw err;
   }
 }
