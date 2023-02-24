@@ -14,7 +14,7 @@ export function deployContract(args, options={}) {
   _setProvider();
   const sourceCode = options.file ? readFile(options.file, 'source code file', {json: true}) : {};
   const abi = options.abi || sourceCode.abi || sdacAbi.v1;
-  let bytecode = options.bytecode || sourceCode.bytecode || sourceCode.data && sourceCode.data.bytecode ? sourceCode.data.bytecode.object : undefined;
+  let bytecode = options.bytecode || sourceCode.bytecode || ((sourceCode.data && sourceCode.data.bytecode) ? sourceCode.data.bytecode.object : undefined);
   if (!bytecode) throw new Error("missing bytecode");
   if (bytecode.startsWith('0x')) bytecode = bytecode.substring(2);
   const expandedArgs = options.noexpand ? args : _expandAddresses(args);
