@@ -56,10 +56,11 @@ function registerCommands(program, errorHandler) {
   .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-l, --toLowerCase', 'make contract address lowercase')
+  .option('-b, --binary <file>', 'treat output as binary (converts from base64) and write to the given file')
   .action(function(server, contract, filename, options){
     try{
       readVault(server, contract, filename, options)
-        .then(console.log)
+        .then( result => { if (result) console.log(result) } )
         .catch(errorHandler);
     }
     catch(error) { errorHandler(error) }
@@ -77,6 +78,7 @@ function registerCommands(program, errorHandler) {
   .option('--data <string>', 'string data to write instead of a file')
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-l, --toLowerCase', 'make contract address lowercase')
+  .option('-b, --binary', 'treat input file as binary (converts to base64)')
   .action(function(server, contract, filename, file, options){
     try{
       writeVault(server, contract, filename, file, options)
@@ -98,6 +100,7 @@ function registerCommands(program, errorHandler) {
   .option('--data <string>', 'string data to write instead of a file')
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-l, --toLowerCase', 'make contract address lowercase')
+  .option('-b, --binary', 'treat input file as binary (converts to base64)')
   .action(function(server, contract, filename, file, options){
     try{
       appendVault(server, contract, filename, file, options)
@@ -263,7 +266,15 @@ function deleteVault(server, contract, options) {
 function readVault(server, contract, filename, options) {
   const params = validateVaultParams(server, contract, filename, options);
   console.trace('readVault', JSON.stringify(params.server), params.contract, params.filename, options);
-  return params.vault.read(params.filename);
+  return params.vault.read(params.filename)
+    .then( data => {
+      if (options.binary) {
+        console.trace("writing output to "+options.binary);
+        fs.writeFileSync(options.binary, Buffer.from(data, 'base64'));
+        return;
+      }
+      return data
+    });
 }
 
 function writeVault(server, contract, filename, file, options={}) {
@@ -273,7 +284,7 @@ function writeVault(server, contract, filename, file, options={}) {
   if (!file && !data) throw new Error('missing file or data string');
   if (file) {
     if (!fs.existsSync(file)) throw new Error('file does not exist');
-    data = fs.readFileSync(file).toString();
+    data = fs.readFileSync(file).toString(options.binary ? 'base64' : 'utf8');
   }
   console.trace('writeVault', JSON.stringify(params.server), params.contract, params.filename, options);
   return params.vault.write(data, params.filename);
@@ -286,7 +297,7 @@ function appendVault(server, contract, filename, file, options={}) {
   if (!file && !data) throw new Error('missing file or data string');
   if (file) {
     if (!fs.existsSync(file)) throw new Error('file does not exist');
-    data = fs.readFileSync(file).toString();
+    data = fs.readFileSync(file).toString(options.binary ? 'base64' : 'utf8');
   }
   console.trace('appendVault', JSON.stringify(params.server), params.contract, params.filename, options);
   return params.vault.append(data, params.filename);
