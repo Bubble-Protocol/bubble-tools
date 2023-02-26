@@ -17,7 +17,7 @@ export function deployContract(args, options={}) {
   let bytecode = options.bytecode || sourceCode.bytecode || ((sourceCode.data && sourceCode.data.bytecode) ? sourceCode.data.bytecode.object : undefined);
   if (!bytecode) throw new Error("missing bytecode");
   if (bytecode.startsWith('0x')) bytecode = bytecode.substring(2);
-  const expandedArgs = options.noexpand ? args : _expandAddresses(args);
+  const expandedArgs = options.noexpand ? args : _expandArgs(args);
   const key = getApplicationKey(options.key);
   if (!key) throw new Error('you must connect to your bubble or manually add a key');
   console.trace("key:", key.address);
@@ -95,6 +95,12 @@ function _setProvider() {
 
 function _expandAddresses(arr) {
   return arr.map(v => { return addressBook.parseAddress(v) });
+}
+
+function _expandArgs(arr) {
+  return arr.map(v => { 
+    return addressBook.parseAddress(v) || v;
+  });
 }
 
 const blockchain = {

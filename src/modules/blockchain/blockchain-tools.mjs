@@ -17,9 +17,9 @@ function registerCommands(program, errorHandler) {
     .option('-f, --file <sourceCodeFile>', 'json file containing an object with the abi and bytecode.  Accepts the standard compiler output or a flattened version {"abi": [...], "bytecode": "..."}')
     .option('-s, --save <label>', 'save the deployed contract address to the address book with the given label')
     .option('-m, --memo <label>', 'use in conjunction with -s to save the deployed contract address with the given memo')
-    .action(function(contract, args, options){
+    .action(function(args, options){
       try{
-        blockchain.deployContract(contract, args, options)
+        blockchain.deployContract(args, options)
         .then(console.log)
         .catch(error => { errorHandler(error) })
       }
