@@ -72,6 +72,22 @@ function registerCommands(program, errorHandler) {
       catch(error) { errorHandler(error) }
     });
 
+  // GETEVENTS Command
+  group
+    .command('events <contract> <event> [filter]')
+    .summary('gets any past events for a given contract with the event name and filter given')
+    .description('get past events for the contract given in the source code specified with the --abi or --file option.  Filter is a json object formatted as required by web3.js, e.g. {"myIndexedParam": [20,23], "myOtherIndexedParam": "0x123456789..."}')
+    .option('-a, --abi <abi>', 'abi of contract (in json format)')
+    .option('-f, --file <sourceCodeFile>', 'json file containing an object with at least the abi, i.e. {"abi": [...], ...}')
+    .action(function(contract, event, filter, options){
+      try{
+        blockchain.getEvents(contract, event, filter, options)
+        .then(console.log)
+        .catch(error => { errorHandler(error) })
+      }
+      catch(error) { errorHandler(error) }
+    });
+
 }
 
 const BlockchainTools = {

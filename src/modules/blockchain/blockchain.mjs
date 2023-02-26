@@ -5,6 +5,7 @@ import { readFile } from "../../utils/file-utils.mjs";
 import { getDefaultProvider } from "./providers.mjs";
 import StringUtils from "../../utils/string-utils.mjs";
 import Web3 from 'web3';
+import { json } from "stream/consumers";
 
 const sdacAbi = {
   v1: JSON.parse('[ { "inputs": [], "name": "ALL_PERMISSIONS", "outputs": [ { "internalType": "bytes1", "name": "", "type": "bytes1" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "APPEND_BIT", "outputs": [ { "internalType": "bytes1", "name": "", "type": "bytes1" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "DIRECTORY_BIT", "outputs": [ { "internalType": "bytes1", "name": "", "type": "bytes1" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "DatonaProtocolVersion", "outputs": [ { "internalType": "string", "name": "", "type": "string" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "NO_PERMISSIONS", "outputs": [ { "internalType": "bytes1", "name": "", "type": "bytes1" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "READ_BIT", "outputs": [ { "internalType": "bytes1", "name": "", "type": "bytes1" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "WRITE_BIT", "outputs": [ { "internalType": "bytes1", "name": "", "type": "bytes1" } ], "stateMutability": "view", "type": "function" }, { "inputs": [ { "internalType": "address", "name": "requester", "type": "address" }, { "internalType": "address", "name": "file", "type": "address" } ], "name": "getPermissions", "outputs": [ { "internalType": "bytes1", "name": "", "type": "bytes1" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "hasExpired", "outputs": [ { "internalType": "bool", "name": "", "type": "bool" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "owner", "outputs": [ { "internalType": "address", "name": "", "type": "address" } ], "stateMutability": "view", "type": "function" }, { "inputs": [], "name": "terminate", "outputs": [], "stateMutability": "nonpayable", "type": "function" } ]')
@@ -54,7 +55,7 @@ export function callContract(contractStr, method, args, options) {
   const abi = options.abi ? JSON.parse(options.abi) : (options.file ? JSON.parse(readFile(options.file, "source code file")).abi : sdacAbi.v1);
   if (!abi) throw new Error("abi or source code file is invalid");
   const contract = new datona.blockchain.Contract(abi, contractAddress);
-  const expandedArgs = options.noexpand ? args : _expandAddresses(args);
+  const expandedArgs = options.noexpand ? args : _expandArgs(args);
   console.trace("contract:", contractAddress);
   console.trace("calling:", method+'('+expandedArgs.join(', ')+')');
   return contract.call(method, _expandAddresses(args));
@@ -66,7 +67,7 @@ export function transactContract(contractStr, method, args, options={}) {
   if (!contractAddress) throw new Error('invalid contract address');
   const sourceCode = options.file ? readFile(options.file, 'source code file', {json: true}) : {};
   const abi = options.abi || sourceCode.abi || sdacAbi.v1;
-  const expandedArgs = options.noexpand ? args : _expandAddresses(args);
+  const expandedArgs = options.noexpand ? args : _expandArgs(args);
   const key = getApplicationKey(options.key);
   if (!key) throw new Error('you must connect to your bubble or manually add a key');
   console.trace("key:", key.address);
@@ -86,6 +87,31 @@ export function getBalance(accountStr) {
   .then(balance => {
     return web3.utils.fromWei(balance, "ether")
   })
+}
+
+export function getEvents(contractStr, event, filterStr, options={}) {
+  _setProvider();
+  const contractAddress = addressBook.parseAddress(contractStr);
+  if (!contractAddress) throw new Error('invalid contract address');
+  let filter = undefined;
+  try {
+    if (filterStr) filter = JSON.parse(filterStr);
+  }
+  catch(err) { throw new Error('filter is not a valid JSON object') }
+  const sourceCode = options.file ? readFile(options.file, 'source code file', {json: true}) : {};
+  const abi = options.abi || sourceCode.abi;
+  if (!abi) throw new Error('missing contract abi');
+  const key = getApplicationKey(options.key);
+  if (!key) throw new Error('you must connect to your bubble or manually add a key');
+  console.trace("key:", key.address);
+  console.trace("getting events for contract", contractAddress, 'event', event);
+  const contract = new datona.blockchain.Contract(abi, contractAddress);
+  return contract.web3Contract.getPastEvents(event, {fromBlock: 'earliest', filter: filter})
+    .then(events => {
+      console.trace(events);
+      console.trace(events.length, "events received");
+      return events.map(e => { return JSON.stringify(e.returnValues) }).join(',\n');
+    })
 }
 
 function _setProvider() {
@@ -108,7 +134,8 @@ const blockchain = {
   terminateContract: terminateContract,
   callContract: callContract,
   transactContract: transactContract,
-  getBalance: getBalance
+  getBalance: getBalance,
+  getEvents: getEvents
 }
 
 export default blockchain;
