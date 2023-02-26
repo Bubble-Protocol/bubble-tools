@@ -24,7 +24,7 @@ const program = new Commander.Command();
 // MAIN
 
 program
-	.version('0.1.1-alpha')
+	.version('0.1.4-alpha')
 	.usage('<command> [options] [args]   # Try datona <command> --help')
 	.option('-v, --verbose', 'trace and debug output')
 	.parseOptions(process.argv);
