@@ -63,6 +63,7 @@ function registerCommands(program, errorHandler) {
     .option('-k, --key <key>', 'wallet key to use to sign the transaction')
     .option('-a, --abi <abi>', 'abi of contract (in json format)')
     .option('-f, --file <sourceCodeFile>', 'json file containing an object with at least the abi, i.e. {"abi": [...], ...}')
+    .option('-o, --options <txnOptions>', 'json object containing ethereumjs-tx transaction options, e.g. {"value": 10000, "gasPrice": "0x09184e72a000"}')
     .action(function(contract, method, args, options){
       try{
         blockchain.transactContract(contract, method, args, options)

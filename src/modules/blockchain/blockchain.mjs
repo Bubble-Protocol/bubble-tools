@@ -70,11 +70,19 @@ export function transactContract(contractStr, method, args, options={}) {
   const expandedArgs = options.noexpand ? args : _expandArgs(args);
   const key = getApplicationKey(options.key);
   if (!key) throw new Error('you must connect to your bubble or manually add a key');
+  let txnOptions = undefined;
+  if (options.options) {
+    try {
+      txnOptions = JSON.parse(options.options)
+    }
+    catch(err) { throw new Error('transaction options is not a valid JSON object') }
+  }
   console.trace("key:", key.address);
   console.trace("contract:", contractAddress);
   console.trace("calling:", method+'('+expandedArgs.join(', ')+')');
+  if (txnOptions) console.trace("options:", JSON.stringify(txnOptions));
   const contract = new datona.blockchain.Contract(abi, contractAddress);
-  return contract.transact(key, method, expandedArgs);
+  return contract.transact(key, method, expandedArgs, txnOptions);
 }
 
 export function getBalance(accountStr) {
