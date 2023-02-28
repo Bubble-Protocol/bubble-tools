@@ -101,8 +101,8 @@ function registerCommands(program, errorHandler) {
   // GETINFO Command
   group
     .command('info')
-    .description("displays information about a key" )
-    .argument('<key>', "private key (in hex)")
+    .description("displays information about a key or label" )
+    .argument('<key>', "private key (in hex) or label")
     .option('-p, --public-key', "display public key")
     .action(function(keyStr, options){
       try{

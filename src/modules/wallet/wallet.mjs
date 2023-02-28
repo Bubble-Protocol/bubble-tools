@@ -84,11 +84,18 @@ function listKeys(label) {
   })
 }
 
-function getInfo(keyStr) {
+function getInfo(keyStr, options={}) {
   try {
-    if (keyStr && keyStr.startsWith('0x')) keyStr = keyStr.substring(2);
-    const key = new datona.crypto.Key(keyStr);
-    return {address: key.address, publicKey: '0x'+datona.crypto.uint8ArrayToHex(key.publicKey)}
+    const addresses = listKeys(keyStr);
+    let address = addresses.find(a => { return a.label === keyStr.toLowerCase() });
+    if (address) {
+      return {address: address.address, publicKey: address.publicKey}
+    }
+    else {
+      if (keyStr && keyStr.startsWith('0x')) keyStr = keyStr.substring(2);
+      const key = new datona.crypto.Key(keyStr);
+      return {address: key.address, publicKey: '0x'+datona.crypto.uint8ArrayToHex(key.publicKey)}
+    }
   }
   catch(error) {
     throw new Error("invalid private key");
