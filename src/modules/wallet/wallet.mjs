@@ -39,8 +39,11 @@ function setApplicationKey(privateKey, label=DEFAULT_KEY, force=false) {
   if (!force && hasApplicationKey(label)) {
     throw new Error("application key '"+label+"' already exists");
   };
+  if (!hasApplicationKey(DEFAULT_KEY)) {
+    fs.writeFileSync(WALLET_DIR+'/'+DEFAULT_KEY, privateKey);
+    fs.writeFileSync(WALLET_DIR+'/'+INITIAL_KEY, privateKey);
+  }
   fs.writeFileSync(WALLET_DIR+'/'+label, privateKey);
-  if (label === DEFAULT_KEY && !hasApplicationKey(INITIAL_KEY)) fs.writeFileSync(WALLET_DIR+'/initial-application-key', privateKey);
   return true;
 }
 
