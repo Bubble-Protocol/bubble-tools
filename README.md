@@ -9,20 +9,27 @@ Command line developer tools for [Bubble Protocol](https://bubbleprotocol.com). 
 ```
 npm install -g @bubble-protocol/bubble-tools
 ```
+
 # Usage
+Before you can use Bubble Tools you will need to initialise your wallet.
 
-## Initialise Your Local Wallet
+## Initialise Your Wallet
 
-To initialise your wallet and connect it to your Bubble ID, use the following command.
+```
+bubble wallet create default-key
+```
+Replace `default-key` with a label of your choice.  This will generate a random private key and set it as the default key.
+
+## Connect To Your Bubble ID
+
+You can optionally connect your Bubble Tools installation to your Bubble ID.  Doing so will let you transact as your personas using the default key.
+
+**NB: Bubble Tools requests admin rights over your personas.  For security, it is recommended that you disable it in your dashboard when not using it and enable it only when you need it.**
 
 ```
 bubble wallet connectToBubble
 ```
-### Connect To Your Bubble ID
-
-The output of the `connectToBubble` command above includes a request code to paste into your [Bubble Dashboard](https://datonavault.com/bubble).  This will connect bubble tools to your Bubble ID letting you transact as your personas using the application's local private key.
-
-**NB: Bubble Tools requests admin rights over your personas.  For security, it is recommended you disable it in your dashboard when not using it and enable it only when you need it.**
+This will generate a request code.  Paste the code into your [Bubble Dashboard](https://datonavault.com/bubble) and approve the connection.
 
 ## List All Commands
 
