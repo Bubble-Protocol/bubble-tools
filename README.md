@@ -35,6 +35,20 @@ For example, to add the Bubble Private Cloud use:
 bubble servers add bubble-cloud https://vault.bubbleprotocol.com/v2
 ```
 
+### Configure Your Blockchain Providers
+
+*Note, you only need to configure blockchain providers if you want to manage smart contracts using the `contract` command.*
+
+Create the file `~/.bubble-tools/providers` and paste the contents of [`providers.json`](./providers.json).  Edit to configure the url(s) of your Infura, QuickNode, Alchemy or other web3 provider.
+
+OR
+
+For personal development purposes you are free to use Bubble Protocol's providers:
+
+```
+curl https://vault.bubbleprotocol.com:8125/providers > ~/.bubble-tools/providers
+```
+
 ## Commands
 
 Commands a organised in a hierarchy.  Use the following to list the top-level commands:
