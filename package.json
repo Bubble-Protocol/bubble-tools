@@ -1,9 +1,9 @@
 {
   "name": "@bubble-protocol/bubble-tools",
-  "version": "0.2.1-alpha",
+  "version": "0.2.2-alpha",
   "description": "Bubble Protocol command line tools.",
   "bin": {
-    "bubble": "./src/cli.mj"
+    "bubble": "./src/cli.js"
   },
   "type": "module",
   "author": "Bubble Protocol",
