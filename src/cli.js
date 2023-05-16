@@ -23,7 +23,7 @@ const program = new Commander.Command();
 // MAIN
 
 program
-	.version('0.2.1-alpha')
+	.version('0.2.3-alpha')
 	.usage('<command> [options] [args]   # Try bubble <command> --help')
 	.option('-v, --verbose', 'trace and debug output')
 	.parseOptions(process.argv);
