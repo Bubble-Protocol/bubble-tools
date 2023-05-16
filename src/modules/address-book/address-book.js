@@ -124,7 +124,6 @@ function parseServer(serverStr, silent=true, descriptiveName='url') {
       server = {name: 'Unknown', url: url.toString()};
     }
     catch(error) {
-      console.debug(error);
       if (!silent) throw new Error(descriptiveName+' is invalid: '+error.message);
     }
   }

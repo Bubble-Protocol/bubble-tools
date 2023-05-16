@@ -12,7 +12,7 @@ function registerCommands(program, errorHandler) {
     .action(function(data, options){
       try {
         if (options.file) data = readFile(options.file, "file") + data;
-        console.log('0x'+hash(data || ''));
+        console.log(hash(data || ''));
       }
       catch(error) { errorHandler(error) }
     });

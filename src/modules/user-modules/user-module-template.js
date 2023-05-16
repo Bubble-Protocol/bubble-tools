@@ -1,4 +1,4 @@
-/*
+/**
  * Example user defined module extending the CLI with new group and command.  Exports a single 'registerCommands'
  * function, which the CLI calls on construction.  This function can add groups and/or commands to extend
  * the CLI in accordance with the Commander package usage - see https://www.npmjs.com/package/commander.
@@ -10,6 +10,8 @@
  * 
  * The imports object contains:
  * 
+ *   core from @bubble-protocol/core
+ *   client from @bubble-protocol/client
  *   blockchain from src/modules/blockchain/blockchain.js
  *   wallet from src/modules/wallet/wallet.js
  *   addressBook from src/modules/address-book/address-book.js

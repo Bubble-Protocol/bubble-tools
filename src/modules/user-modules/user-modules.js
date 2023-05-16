@@ -1,6 +1,8 @@
 import {existsSync} from 'fs';
 import {APP_DIR} from "../../config.js";
 
+import * as bubbleCore from '@bubble-protocol/core';
+import * as bubbleClient from '@bubble-protocol/client';
 import blockchain from '../blockchain/blockchain.js';
 import wallet from "../wallet/wallet.js";
 import addressBook from "../address-book/address-book.js";
@@ -15,10 +17,14 @@ const USER_MODULE_FILE = APP_DIR+'/modules.js';
 
 // Imports for passing to any user modules
 const imports = {
+	bubbleSDK: {
+		core: bubbleCore,
+		client: bubbleClient
+	},
 	wallet: wallet,
 	addressBook: addressBook,
 	blockchain: blockchain,
-	vault: BubbleTools,
+	content: BubbleTools,
 	CryptoTools: CryptoTools,
 	ImageTools: ImageTools,
 	ImageUtils: ImageUtils,

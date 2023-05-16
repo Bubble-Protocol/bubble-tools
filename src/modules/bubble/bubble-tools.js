@@ -5,12 +5,12 @@ import { appendBubble, createBubble, deleteBubble, deleteBubbleFile, getContentI
 function registerCommands(program, errorHandler) {
 
   const group = program
-    .command('vault')
-    .description("create and manage off-chain bubbles" );
+    .command('content')
+    .description("create and manage off-chain content" );
 
   // CREATEBUBBLE Command
   group
-  .command('create')
+  .command('create-bubble')
   .summary("creates a bubble")
   .description("creates a bubble on the given bubble server controlled by the given smart data access contract" )
   .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )

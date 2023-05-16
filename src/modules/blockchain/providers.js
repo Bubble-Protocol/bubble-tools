@@ -1,6 +1,6 @@
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
-const providerList = require('./providers.json');
+const providerList = require('../../../providers.json');
 
 
 export const blockchainProviders = {

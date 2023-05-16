@@ -52,7 +52,7 @@ function registerCommands(program, errorHandler) {
   // SERVERS Command
   servers
     .command('list')
-    .description('lists the vault servers that can be used with the --server option')
+    .description('lists the off-chain storage servers that can be used with the --server option')
     .action(function(){
       try{ 
         const servers = addressBook.getServers();
