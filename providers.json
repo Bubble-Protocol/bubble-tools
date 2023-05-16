@@ -6,7 +6,6 @@
     "name": "Base Goerli",
     "nickname": "base",
     "currency": "eth",
-    "url": "https://divine-green-orb.base-goerli.discover.quiknode.pro/f886a37aca7a8de5ac712cafe870639d9efe36e1",
-    "blockTime": 2000
+    "url": "<YOUR_PROVIDER>"
   }
 ]
