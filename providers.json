@@ -8,50 +8,5 @@
     "currency": "eth",
     "url": "https://divine-green-orb.base-goerli.discover.quiknode.pro/f886a37aca7a8de5ac712cafe870639d9efe36e1",
     "blockTime": 2000
-  },
-  {
-    "type": "unsupported",
-    "chainId": 1,
-    "name": "Ethereum",
-    "nickname": "ethereum",
-    "currency": "eth",
-    "blockTime": 12000
-  },
-  {
-    "type": "http",
-    "chainId": 137,
-    "name": "Polygon",
-    "nickname": "polygon",
-    "currency": "matic",
-    "url": "https://polygon-mainnet.g.alchemy.com/v2/aLocFMVna57a6wIozAAwjggKEFvLfMcf",
-    "blockTime": 2000
-  },
-  {
-    "type": "ankr",
-    "chainId": 56,
-    "name": "Binance Smart Chain",
-    "endpoint": "https://rpc.ankr.com/multichain",
-    "nickname": "binance",
-    "currency": "bsc",
-    "blockTime": 3000,
-    "networkLatency": 5000
-  },
-  {
-    "type": "ankr",
-    "chainId": 43114,
-    "name": "Avalanche",
-    "url": "https://rpc.ankr.com/multichain",
-    "nickname": "avalanche",
-    "currency": "avax",
-    "blockTime": 2000,
-    "networkLatency": 5000
-  },
-  {
-    "type": "unsupported",
-    "chainId": 11155111,
-    "name": "Sepolia",
-    "nickname": "sepolia",
-    "currency": "eth",
-    "blockTime": 12000
   }
 ]
