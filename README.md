@@ -12,10 +12,6 @@ Lets you deploy and manage contracts, create and manage off-chain bubbles, read 
 npm install -g @bubble-protocol/bubble-tools
 ```
 
-# Supported Chains
-
-`providers.json` holds the list of supported blockchains. The first chain in the list is used by default.  In all commands, the default chain can be overridden with any other chain in the list using the `-c` option, which takes the chain id, name or nickname.
-
 # Usage
 
 ## Setup
@@ -49,6 +45,7 @@ For personal development purposes you are free to use Bubble Protocol's provider
 curl https://vault.bubbleprotocol.com:8125/providers > ~/.bubble-tools/providers
 ```
 
+By default the `contract` commands use the first chain listed in the file.  In all commands the default chain can be overridden with any other chain in the list using the `-c` option, which takes the chain id, name or nickname.
 ## Commands
 
 Commands a organised in a hierarchy.  Use the following to list the top-level commands:
