@@ -18,6 +18,8 @@ function registerCommands(program, errorHandler) {
     .option('-f, --file <sourceCodeFile>', 'json file containing an object with the abi and bytecode.  Accepts the standard compiler output or a flattened version {"abi": [...], "bytecode": "..."}')
     .option('-s, --save <label>', 'save the deployed contract address to the address book with the given label')
     .option('-m, --memo <label>', 'use in conjunction with -s to save the deployed contract address with the given memo')
+    .option('-o, --options <txnOptions>', 'json object containing ethereumjs-tx transaction options, e.g. {"value": 10000, "gasPrice": "0x09184e72a000"}')
+    .option('-p, --price <gasPrice>', 'shortcut to set txnOptions gasPrice')
     .action(async function(args, options){
       try{
         blockchain.deployContract(args, options)
@@ -55,6 +57,7 @@ function registerCommands(program, errorHandler) {
     .option('-f, --file <sourceCodeFile>', 'json file containing an object with at least the abi, i.e. {"abi": [...], ...}')
     .option('-s, --silent', 'no output')
     .option('-o, --options <txnOptions>', 'json object containing ethereumjs-tx transaction options, e.g. {"value": 10000, "gasPrice": "0x09184e72a000"}')
+    .option('-p, --price <gasPrice>', 'shortcut to set txnOptions gasPrice')
     .action(function(contract, method, args, options){
       try{
         blockchain.transactContract(contract, method, args, options)

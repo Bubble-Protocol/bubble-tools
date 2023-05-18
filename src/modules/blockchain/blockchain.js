@@ -21,7 +21,16 @@ export async function deployContract(args=[], options={}) {
 
   const contract = _getContract(options);
 
-  return contract.deploy(key, bytecode, args)
+  let txnOptions = undefined;
+  if (options.price) txnOptions = {gasPrice: options.price};
+  if (options.options) {
+    try {
+      txnOptions = JSON.parse(options.options)
+    }
+    catch(err) { throw new Error('transaction options is not a valid JSON object') }
+  }
+
+  return contract.deploy(key, bytecode, args, txnOptions)
     .then(address => {
       if (options.save) {
         try {
@@ -68,6 +77,7 @@ export async function transactContract(contractStr, method, args, options={}) {
   const key = getApplicationKey(options.key);
 
   let txnOptions = undefined;
+  if (options.price) txnOptions = {gasPrice: options.price};
   if (options.options) {
     try {
       txnOptions = JSON.parse(options.options)

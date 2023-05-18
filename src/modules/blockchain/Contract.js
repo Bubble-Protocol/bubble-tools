@@ -34,7 +34,7 @@ export class Contract {
   /**
    * Promises to deploy this contract on the blockchain
    */
-  deploy(key, bytecode, constructorArgs) {
+  deploy(key, bytecode, constructorArgs, options={}) {
     assert.isObject(key, "key");
     assert.isHexString(bytecode, "bytecode");
     if (constructorArgs !== undefined) assert.isArray(constructorArgs, "constructorArgs");
@@ -49,7 +49,8 @@ export class Contract {
     // create skeleton transaction
     const rawTxn = {
       data: txnData,
-      gas: this.web3.utils.toHex(6000000)
+      gas: this.web3.utils.toHex(6000000),
+      ..._hexifyOptions(options)
     }
 
     // function to set the address of this Contract instance once the receipt is received
@@ -100,7 +101,7 @@ export class Contract {
    * Promises to call the given state-modifying method with the given arguments.
    * Use 'call' to call a view or pure method.
    */
-  transact(key, method, args = [], options) {
+  transact(key, method, args = [], options={}) {
     assert.isObject(key, "key");
     assert.isString(method, "method");
     assert.isArray(args, "args");
@@ -115,9 +116,9 @@ export class Contract {
     const rawTxn = {
       gas: this.web3.utils.toHex(3000000),
       data: this.web3Contract.methods[method](...args).encodeABI(),
-      to: this.address
+      to: this.address,
+      ..._hexifyOptions(options)
     };
-    for (const field in options) rawTxn[field] = options[field];
     return _sendTransaction(this.web3, this.chain, key, rawTxn);
   }
 
@@ -160,4 +161,21 @@ function _sendTransaction(web3, chain, key, transaction) {
     .then(web3.eth.sendSignedTransaction)
     .then(checkReceiptStatus);
 
+}
+
+
+function _hexifyOptions(options) {
+  if (options.gasPrice) options.gasPrice = _hexify(options.gasPrice);
+  if (options.gas) options.gas = _hexify(options.gas);
+  return options;
+}
+
+
+function _hexify(val) {
+  if (typeof val === 'string') {
+    if (val.slice(0,2) === '0x') return val;
+    return '0x'+parseInt(val).toString(16);
+  }
+  else if (typeof val === 'number') return '0x'+val.toString(16);
+  return val;
 }
