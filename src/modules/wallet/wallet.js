@@ -1,4 +1,5 @@
 import { assert } from '@bubble-protocol/core';
+import { ecdsa } from '@bubble-protocol/crypto';
 import fs from 'fs';
 import {APP_DIR as CONFIGURED_APP_DIR} from "../../config.js";
 import { generateAccount, privateKeyToAccount } from '../crypto/crypto.js';
@@ -44,7 +45,7 @@ function setApplicationKey(privateKey, label=DEFAULT_KEY, force=false) {
 }
 
 function addApplicationKey(label, privateKey) {
-  assert.isPrivateKey(privateKey, "private key");
+  ecdsa.assert.isPrivateKey(privateKey, "private key");
   assert.isString(label, "label");
   return setApplicationKey(privateKey, label);
 }

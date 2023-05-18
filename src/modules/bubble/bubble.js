@@ -1,5 +1,5 @@
 import { Bubble, bubbleProviders } from '@bubble-protocol/client';
-import { ROOT_PATH, BubbleFilename, ContentId, assert, BubblePermissions } from '@bubble-protocol/core';
+import { ROOT_PATH, BubbleFilename, ContentId, assert } from '@bubble-protocol/core';
 import fs from 'fs';
 import wallet from "../wallet/wallet.js";
 import addressBook from "../address-book/address-book.js";
@@ -163,7 +163,7 @@ function _validateBubbleParams(serverStr, contractStr, filenameStr, options) {
 
 function _validateFilename(filename) {
   assert.isString(filename, 'filename');
-  if (assert.isHash(filename)) return filename;
+  if (assert.isHex32(filename)) return filename;
   const parts = filename.split('/');
   if (parts.length === 0 || parts.length > 2) throw new Error('filename is invalid');
   if (parts[0].slice(0,2) === '0x') {  // hex

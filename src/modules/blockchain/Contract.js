@@ -1,5 +1,6 @@
 
 import { assert, BubblePermissions, ROOT_PATH } from '@bubble-protocol/core';
+import { ecdsa } from '@bubble-protocol/crypto';
 import { Transaction } from 'ethereumjs-tx';
 
 
@@ -25,7 +26,7 @@ export class Contract {
    * alternative to passing it in the constructor.
    */
   setAddress(address) {
-    assert.isAddress(address, "address");
+    ecdsa.assert.isAddress(address, "address");
     this.web3Contract.options.address = address;
     this.address = address;
   }
@@ -69,9 +70,9 @@ export class Contract {
    * Promises to return a Permissions object
    */
   getPermissions(user, fileId) {
-    assert.isAddress(user, "user");
+    ecdsa.assert.isAddress(user, "user");
     if (fileId === undefined) fileId = ROOT_PATH;
-    else assert.isAddress(fileId, "fileId");
+    else assert.isHex32(fileId, "fileId");
     if (this.address === undefined) throw new Error("contract has not been deployed or mapped to an existing contract");
     return this.call("getAccessPermissions", [user, fileId])
       .then(permissionBits => {

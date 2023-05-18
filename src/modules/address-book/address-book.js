@@ -1,4 +1,5 @@
 import { assert } from '@bubble-protocol/core';
+import { ecdsa } from '@bubble-protocol/crypto';
 import fs from 'fs';
 import {APP_DIR as CONFIGURED_APP_DIR} from "../../config.js";
 import wallet from "../wallet/wallet.js";
@@ -86,7 +87,7 @@ function getAddressBook() {
 
 function addAddress(label, address, memo, options={}) {
   assert.isString(label, "label");
-  assert.isAddress(address, "address");
+  ecdsa.assert.isAddress(address, "address");
   if (options.toLowerCase) address = address.toLowerCase();
   const addresses = getAddressBook();
   label = label.toLowerCase();
@@ -135,7 +136,7 @@ function parseAddress(addressStr, silent=true, descriptiveName='address') {
     if (silent) return undefined;
     else throw new Error(descriptiveName+' is invalid')
   }
-  if (assert.isAddress(addressStr)) return addressStr;
+  if (ecdsa.assert.isAddress(addressStr)) return addressStr;
   const parts = addressStr.split('/');
   if (parts.length !== 1) {
     if (parts.length !== 2) return undefined;
@@ -157,7 +158,7 @@ function parseAddress(addressStr, silent=true, descriptiveName='address') {
       }
       else {
         address = '0x'+("0000000000000000000000000000000000000000"+addressStr.substring(2)).slice(-40);
-        if (!assert.isAddress(address)) address = undefined;
+        if (!ecdsa.assert.isAddress(address)) address = undefined;
       }
     }
     else {
@@ -172,7 +173,7 @@ function parseAddress(addressStr, silent=true, descriptiveName='address') {
       }
       else {
         address = '0x'+("0000000000000000000000000000000000000000"+intAddress.toString(16)).slice(-40);
-        if (!assert.isAddress(address)) {
+        if (!ecdsa.assert.isAddress(address)) {
           if (silent) address = undefined;
           else throw new Error(descriptiveName+' is invalid')
         }

@@ -1,4 +1,5 @@
 import { assert } from '@bubble-protocol/core';
+import { ecdsa } from '@bubble-protocol/crypto';
 import Web3 from 'web3';
 import secp256k1 from 'secp256k1';
 import StringUtils from '../../utils/string-utils.js';
@@ -19,7 +20,7 @@ export function generateAccount() {
 
 
 export function privateKeyToAccount(privateKey) {
-  assert.isPrivateKey(privateKey, "privateKey"); 
+  ecdsa.assert.isPrivateKey(privateKey, "privateKey"); 
   return _constructAccount(privateKey);
 }
 
