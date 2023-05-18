@@ -31,6 +31,7 @@
   "dependencies": {
     "@bubble-protocol/client": "^0.0.x",
     "@bubble-protocol/core": "^0.0.x",
+    "@bubble-protocol/crypto": "^0.0.3",
     "bip32": "^2.0.6",
     "commander": "^9.3.0",
     "crypto": "^1.0.1",

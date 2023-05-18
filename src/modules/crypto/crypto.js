@@ -38,27 +38,16 @@ export function hash(str) {
 
 
 function _constructAccount(privateKey) {
-  const pkBuf = StringUtils.hexToUint8Array(privateKey);
+  const key = new ecdsa.Key(privateKey);
+  key.publicKey = key.uPublicKey;
   const account = {
-    privateKey: privateKey,
-    publicKey: StringUtils.uint8ArrayToHex(secp256k1.publicKeyCreate(pkBuf, false)),
-    sign: (hash) => _sign(hash, pkBuf)
+    key: key,
+    address: key.address,
+    privateKey: key.privateKey,
+    publicKey: key.uPublicKey,
+    sign: key.promiseToSign
   };
-  account.address = publicKeyToAddress(account.publicKey);
   return account;  
-}
-
-
-function _sign(hash, privateKeyBuf) {
-  return new Promise((resolve, reject) => {
-    try {
-      const sig = secp256k1.ecdsaSign(Buffer.from(hash.slice(2), 'hex'), privateKeyBuf);
-      resolve('0x'+Buffer.from(sig.signature).toString('hex')+Buffer.from([sig.recid]).toString('hex'));
-    }
-    catch(error) {
-      reject(error);
-    }
-  });
 }
 
 
