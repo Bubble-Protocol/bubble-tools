@@ -1,6 +1,6 @@
 {
   "name": "@bubble-protocol/bubble-tools",
-  "version": "0.2.5-alpha",
+  "version": "0.2.6-alpha",
   "description": "Bubble Protocol command line tools.",
   "bin": {
     "bubble": "./src/cli.js"
@@ -29,10 +29,9 @@
   },
   "homepage": "https://github.com/Bubble-Protocol/bubble-tools#readme",
   "dependencies": {
-    "@bubble-protocol/bubble-tools": "^0.2.4-alpha",
     "@bubble-protocol/client": "^0.0.x",
     "@bubble-protocol/core": "^0.0.x",
-    "@bubble-protocol/crypto": "^0.0.3",
+    "@bubble-protocol/crypto": "^0.0.x",
     "bip32": "^2.0.6",
     "commander": "^9.3.0",
     "crypto": "^1.0.1",
