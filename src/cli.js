@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-/*
- * Datona cli main file. 
+/**
+ * Bubble Tools cli main file. 
  *
  * use --help for usage information
  *
