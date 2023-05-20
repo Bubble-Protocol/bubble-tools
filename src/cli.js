@@ -16,6 +16,9 @@ import BlockchainTools from './modules/blockchain/blockchain-tools.js';
 import CryptoTools from './modules/crypto/crypto-tools.js';
 import ImageTools from './modules/image/image-tools.js';
 import UserModules from './modules/user-modules/user-modules.js';
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const packageJSON = require('../package.json');
 
 // Constants
 const program = new Commander.Command();
@@ -23,7 +26,7 @@ const program = new Commander.Command();
 // MAIN
 
 program
-	.version('0.2.6-alpha')
+	.version(packageJSON.version)
 	.usage('<command> [options] [args]   # Try bubble <command> --help')
 	.option('-v, --verbose', 'trace and debug output')
 	.parseOptions(process.argv);
