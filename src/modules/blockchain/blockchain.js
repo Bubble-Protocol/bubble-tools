@@ -158,7 +158,7 @@ function _getABI(options) {
 
 function _getBytecode(options) {
   const sourceCode = options.file ? JSON.parse(readFile(options.file, "source code file")) : {};
-  let bytecode = options.bytecode || sourceCode.bytecode || ((sourceCode.data && sourceCode.data.bytecode) ? sourceCode.data.bytecode.object : undefined);
+  let bytecode = options.bytecode || sourceCode.bytecode || sourceCode.bin || ((sourceCode.data && sourceCode.data.bytecode) ? sourceCode.data.bytecode.object : undefined);
   if (!bytecode) throw new Error("missing bytecode");
   if (bytecode.startsWith('0x')) bytecode = bytecode.substring(2);
   return bytecode;
