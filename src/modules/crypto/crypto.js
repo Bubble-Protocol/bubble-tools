@@ -45,7 +45,7 @@ function _constructAccount(privateKey) {
     address: key.address,
     privateKey: key.privateKey,
     publicKey: key.uPublicKey,
-    sign: key.promiseToSign
+    sign: key.signFunction
   };
   return account;  
 }
