@@ -32,7 +32,8 @@ Replace `default-key` with a label of your choice.  This will generate a random 
 For example, to add the Bubble Private Cloud use:
 
 ```
-bubble servers add bubble-cloud https://vault.bubbleprotocol.com/v2
+bubble servers add bubble-cloud https://vault.bubbleprotocol.com/v2/ethereum
+// Replace `ethereum` with any of the supported blockchains or testnets: `polygon`, `avalanche`, `base-goerli` or `sepolia`
 ```
 
 ### Configure Your Blockchain Providers
