@@ -112,7 +112,7 @@ function writeAddressBook(addresses) {
   localAddressBook = addresses;
 }
 
-function parseServer(serverStr, silent=true, descriptiveName='url') {
+function parseServer(serverStr, blockchainProvider, silent=true, descriptiveName='url') {
   if (!serverStr) {
     if (silent) return undefined;
     else throw new Error(descriptiveName+' is missing')
@@ -128,6 +128,10 @@ function parseServer(serverStr, silent=true, descriptiveName='url') {
       if (!silent) throw new Error(descriptiveName+' is invalid: '+error.message);
     }
   }
+  // replace variables
+  server.url = server.url.replaceAll('{nickname}', blockchainProvider.nickname);
+  server.url = server.url.replaceAll('{name}', blockchainProvider.name);
+  server.url = server.url.replaceAll('{id}', blockchainProvider.chainId);
   return server;
 }
 

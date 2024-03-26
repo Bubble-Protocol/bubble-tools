@@ -32,8 +32,7 @@ Replace `default-key` with a label of your choice.  This will generate a random 
 For example, to add the Bubble Private Cloud use:
 
 ```
-bubble providers add bubble-cloud https://vault.bubbleprotocol.com/v2/polygon
-// Replace `polygon` with any of the supported blockchains or testnets: `ethereum`, `polygon`, `avalanche` or `sepolia`
+bubble providers add bubble-cloud https://vault.bubbleprotocol.com/v2/{nickname}
 ```
 
 ### Configure Your Blockchain Providers
@@ -127,11 +126,18 @@ The provider address book holds the API URLs of off-chain storage providers.  A 
 bubble providers list
 ```
 
-To add the Bubble Private Cloud for the polygon network, for example, use:
+To add the Bubble Private Cloud use:
 
 ```
-bubble providers add bubble-cloud https://vault.bubbleprotocol.com/v2/polygon
+bubble providers add bubble-cloud https://vault.bubbleprotocol.com/v2/{nickname}
 ```
+
+The following variables can be used when adding a provider url:
+
+- `{id}` : replaced with the chain's numeric id
+- `{name}` : replaced with the chain's long-form name
+- `{nickname}` : replaced with the chain's short-form name
+
 
 ### Contract
 

@@ -137,14 +137,14 @@ export function getContentId(server, contract, filename, options) {
 //
 
 function _validateBubble(serverStr, contractStr, options={}) {
-  const server = addressBook.parseServer(serverStr);
+  const provider = blockchainProviders.getProvider(options.chain);
+  const server = addressBook.parseServer(serverStr, provider);
   let contract = addressBook.parseAddress(contractStr);
   if (options.toLowerCase) contract = contract.toLowerCase();
   if (!server) throw new Error('invalid provider url');
   if (!contract) throw new Error('invalid contract address');
   const key = wallet.getApplicationKey(options.key);
   if (!key) throw new Error('you must connect to your bubble or manually add a key');
-  const provider = blockchainProviders.getProvider(options.chain);
   const bubbleId = {
     contract: contract,
     chain: provider.chainId,
