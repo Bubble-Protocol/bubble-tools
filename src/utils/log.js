@@ -99,8 +99,10 @@ function constructLogger(){
   }();
 
   const info = function() {
-    if (enabled.timestamp) return Function.prototype.bind.call(originalConsole.info, nativeConsole, timestamp());
-    else return originalConsole.info;
+    // Crude fix to filter secp error caused by eccrypto dependency - see https://github.com/Bubble-Protocol/bubble-tools/issues/2
+    const filterSecpError = (...params) => { if (!(params && params[0] === "secp256k1 unavailable, reverting to browser version")) originalConsole.info(...params) };
+    if (enabled.timestamp) return Function.prototype.bind.call(filterSecpError, nativeConsole, timestamp());
+    else return filterSecpError;
   }();
 
   const warn = function() {
