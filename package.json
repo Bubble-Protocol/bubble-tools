@@ -1,6 +1,6 @@
 {
   "name": "@bubble-protocol/bubble-tools",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Bubble Protocol command line tools.",
   "bin": {
     "bubble": "./src/cli.js"
