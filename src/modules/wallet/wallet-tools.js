@@ -30,8 +30,11 @@ function registerCommands(program, errorHandler) {
     .action(function(label){
       try{
         const account = generateAccount();
-        if (label) wallet.addApplicationKey(label, account.privateKey);
-        console.log(account.privateKey);
+        if (label) {
+          wallet.addApplicationKey(label, account.privateKey);
+          console.log(account.address);
+        }
+        else console.log(account.privateKey);
       }
       catch(error) { errorHandler(error) }
     });
