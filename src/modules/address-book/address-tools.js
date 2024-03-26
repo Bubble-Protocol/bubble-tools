@@ -58,7 +58,7 @@ function registerCommands(program, errorHandler) {
         const servers = addressBook.getServers();
         const colWidth = servers.reduce((max,s) => s.label.length > max ? s.label.length : max, 0);
         servers.forEach(s => {
-          console.log(s.label+' '.repeat(colWidth-s.label.length)+'\t'+s.id+'\t'+s.url);
+          console.log(s.label+' '.repeat(colWidth-s.label.length)+'\t'+s.url);
         })
       }
       catch(error) { errorHandler(error) }
