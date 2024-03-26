@@ -46,13 +46,13 @@ function registerCommands(program, errorHandler) {
 
 
   const servers = program
-    .command('servers')
-    .description("view and manage your bubble servers" );
+    .command('providers')
+    .description("view and manage your bubble providers" );
 
-  // SERVERS Command
+  // PROVIDERS Command
   servers
     .command('list')
-    .description('lists the off-chain storage servers that can be used with the --server option')
+    .description('lists the off-chain storage providers that can be used with the --provider option')
     .action(function(){
       try{ 
         const servers = addressBook.getServers();
@@ -64,11 +64,11 @@ function registerCommands(program, errorHandler) {
       catch(error) { errorHandler(error) }
     });
 
-  // ADDSERVER Command
+  // ADDPROVIDER Command
   servers
     .command('add <label> <url>')
-    .summary('adds a server to the address book')
-    .description('adds the given server so that it can be used with the --server option.  Label must be unique.')
+    .summary('adds a provider to the address book')
+    .description('adds the given provider so that it can be used with the --provider option.  Label must be unique.')
     .action(function(label, url, id){
       try{
         addressBook.addServer(label, url)
@@ -76,10 +76,10 @@ function registerCommands(program, errorHandler) {
       catch(error) { errorHandler(error) }
     });
 
-  // REMOVESERVER Command
+  // REMOVEPROVIDER Command
   servers
     .command('remove <label>')
-    .description('removes the given server from the address book')
+    .description('removes the given provider from the address book')
     .action(function(label){
       try{
         addressBook.removeServer(label)

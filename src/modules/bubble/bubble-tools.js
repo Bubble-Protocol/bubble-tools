@@ -12,16 +12,16 @@ function registerCommands(program, errorHandler) {
   group
   .command('create-bubble')
   .summary("creates a bubble")
-  .description("creates a bubble on the given bubble server controlled by the given smart data access contract" )
-  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .description("creates a bubble on the given bubble provider controlled by the given smart data access contract" )
+  .argument('<provider>', "a label in the providers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-l, --toLowerCase', 'make contract address lowercase')
   .option('-c, --chain <chain>', 'chain id or name of the blockchain on which the contract is deployed')
   .option('-s, --silent', 'do not throw if bubble already exists')
-  .action(function(server, contract, options){
+  .action(function(provider, contract, options){
     try{
-      createBubble(server, contract, options)
+      createBubble(provider, contract, options)
         .then(console.trace)
         .catch(errorHandler);
     }
@@ -32,15 +32,15 @@ function registerCommands(program, errorHandler) {
   group
   .command('delete-bubble')
   .summary("deletes a bubble")
-  .description("deletes the given bubble server controlled by the given smart data access contract" )
-  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .description("deletes the given bubble provider controlled by the given smart data access contract" )
+  .argument('<provider>', "a label in the providers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-c, --chain <chain>', 'chain id or name of the blockchain on which the contract is deployed')
   .option('-s, --silent', 'do not throw if bubble does not exist')
-  .action(function(server, contract, options){
+  .action(function(provider, contract, options){
     try{
-      deleteBubble(server, contract, options)
+      deleteBubble(provider, contract, options)
         .then(console.trace)
         .catch(errorHandler);
     }
@@ -52,7 +52,7 @@ function registerCommands(program, errorHandler) {
   .command('read')
   .summary("reads a bubble file or lists a bubble directory")
   .description("reads the given bubble file and dumps the content to the console" )
-  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<provider>', "a label in the providers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
   .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
@@ -60,9 +60,9 @@ function registerCommands(program, errorHandler) {
   .option('-l, --toLowerCase', 'make contract address lowercase')
   .option('-b, --binary <file>', 'treat output as binary (converts from base64) and write to the given file')
   .option('-s, --silent', 'do not throw if file does not exist')
-  .action(function(server, contract, filename, options){
+  .action(function(provider, contract, filename, options){
     try{
-      readBubble(server, contract, filename, options)
+      readBubble(provider, contract, filename, options)
         .then( result => { if (result) console.log(result) } )
         .catch(errorHandler);
     }
@@ -74,7 +74,7 @@ function registerCommands(program, errorHandler) {
   .command('write')
   .summary("writes a file or data to a bubble file or directory")
   .description("writes the given file (or data if using the --data option) to the given bubble and filename" )
-  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<provider>', "a label in the providers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
   .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
   .argument('[file]', "the file to write" )
@@ -83,9 +83,9 @@ function registerCommands(program, errorHandler) {
   .option('-c, --chain <chain>', 'chain id or name of the blockchain on which the contract is deployed')
   .option('-l, --toLowerCase', 'make contract address lowercase')
   .option('-b, --binary', 'treat input file as binary (converts to base64)')
-  .action(function(server, contract, filename, file, options){
+  .action(function(provider, contract, filename, file, options){
     try{
-      writeBubble(server, contract, filename, file, options)
+      writeBubble(provider, contract, filename, file, options)
         .then(console.trace)
         .catch(errorHandler);
     }
@@ -97,7 +97,7 @@ function registerCommands(program, errorHandler) {
   .command('append')
   .summary("appends a file or data to a bubble file or directory")
   .description("appends the given file (or data if using the --data option) to the given bubble and filename" )
-  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<provider>', "a label in the providers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
   .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
   .argument('[file]', "the file to write" )
@@ -106,9 +106,9 @@ function registerCommands(program, errorHandler) {
   .option('-c, --chain <chain>', 'chain id or name of the blockchain on which the contract is deployed')
   .option('-l, --toLowerCase', 'make contract address lowercase')
   .option('-b, --binary', 'treat input file as binary (converts to base64)')
-  .action(function(server, contract, filename, file, options){
+  .action(function(provider, contract, filename, file, options){
     try{
-      appendBubble(server, contract, filename, file, options)
+      appendBubble(provider, contract, filename, file, options)
         .then(console.trace)
         .catch(errorHandler);
     }
@@ -120,16 +120,16 @@ function registerCommands(program, errorHandler) {
   .command('delete')
   .summary("deletes a bubble file")
   .description("deletes the given file with the given bubble and filename" )
-  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<provider>', "a label in the providers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
   .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-c, --chain <chain>', 'chain id or name of the blockchain on which the contract is deployed')
   .option('-l, --toLowerCase', 'make contract address lowercase')
   .option('-s, --silent', 'do not throw if file does not exist')
-  .action(function(server, contract, filename, options){
+  .action(function(provider, contract, filename, options){
     try{
-      deleteBubbleFile(server, contract, filename, options)
+      deleteBubbleFile(provider, contract, filename, options)
         .then(console.trace)
         .catch(errorHandler);
     }
@@ -141,16 +141,16 @@ function registerCommands(program, errorHandler) {
   .command('mkdir')
   .summary("make directory")
   .description("mkdir the given directory in the given bubble" )
-  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<provider>', "a label in the providers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
   .argument('<filename>', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-c, --chain <chain>', 'chain id or name of the blockchain on which the contract is deployed')
   .option('-l, --toLowerCase', 'make contract address lowercase')
   .option('-s, --silent', 'do not throw if directory already exists')
-  .action(function(server, contract, filename, options){
+  .action(function(provider, contract, filename, options){
     try{
-      mkdirBubbleFile(server, contract, filename, options)
+      mkdirBubbleFile(provider, contract, filename, options)
         .then(console.trace)
         .catch(errorHandler);
     }
@@ -162,27 +162,27 @@ function registerCommands(program, errorHandler) {
   .command('list')
   .summary("list a bubble file or directory")
   .description("lists the given file or directory with the given bubble and filename. If the filename is missing the root path will be listed." )
-  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<provider>', "a label in the providers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
   .argument('[filename]', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-c, --chain <chain>', 'chain id or name of the blockchain on which the contract is deployed')
   .option('-l, --toLowerCase', 'make contract address lowercase')
   .option('-s, --silent', 'do not throw if file does not exist')
-  .option('--before <before>', 'pass before option to server')
-  .option('--after <after>', 'pass after option to server')
-  .option('--createdBefore <createdBefore>', 'pass createdBefore option to server')
-  .option('--createdAfter <createdAfter>', 'pass createdAfter option to server')
-  .option('--long', 'pass long option to server')
-  .option('--matches <matches>', 'pass matches option to server')
-  .option('--dirOnly', 'pass directoryOnly option to server')
-  .action(function(server, contract, filename, options){
+  .option('--before <before>', 'pass before option to provider')
+  .option('--after <after>', 'pass after option to provider')
+  .option('--createdBefore <createdBefore>', 'pass createdBefore option to provider')
+  .option('--createdAfter <createdAfter>', 'pass createdAfter option to provider')
+  .option('--long', 'pass long option to provider')
+  .option('--matches <matches>', 'pass matches option to provider')
+  .option('--dirOnly', 'pass directoryOnly option to provider')
+  .action(function(provider, contract, filename, options){
     try{
       if (options.before) options.before = parseInt(options.before);
       if (options.after) options.after = parseInt(options.after);
       if (options.createdBefore) options.createdBefore = parseInt(options.createdBefore);
       if (options.createdAfter) options.createdAfter = parseInt(options.createdAfter);
-      listBubbleFile(server, contract, filename, options)
+      listBubbleFile(provider, contract, filename, options)
         .then(console.log)
         .catch(errorHandler);
     }
@@ -192,17 +192,17 @@ function registerCommands(program, errorHandler) {
   // GETPERMISSONS Command
   group
   .command('permissions')
-  .summary("calls the server's getPermissions api")
-  .description("calls the server's getPermissions api returning the server's view of the bubble's smart contract getAccessPermissions." )
-  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .summary("calls the provider's getPermissions api")
+  .description("calls the provider's getPermissions api returning the provider's view of the bubble's smart contract getAccessPermissions." )
+  .argument('<provider>', "a label in the providers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
   .argument('[filename]', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
   .option('-k, --key <key>', 'wallet key to use to sign the transaction')
   .option('-c, --chain <chain>', 'chain id or name of the blockchain on which the contract is deployed')
   .option('-l, --toLowerCase', 'make contract address lowercase')
-  .action(function(server, contract, filename, options){
+  .action(function(provider, contract, filename, options){
     try{
-      getPermissions(server, contract, filename, options)
+      getPermissions(provider, contract, filename, options)
         .then(console.log)
         .catch(errorHandler);
     }
@@ -225,16 +225,16 @@ function registerUtils(program, errorHandler) {
   program
   .command('id')
   .description("returns the content id for a file, directory or bubble")
-  .argument('<server>', "a label in the servers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
+  .argument('<provider>', "a label in the providers list or a string of the form 'https://myurl.com?id=0x123..456' (id can be an address book label)" )
   .argument('<contract>', "an address book label or an Ethereum address" )
   .argument('[filename]', "an address book label, ethereum address or unsigned integer (in decimal or hex)" )
   .option('-c, --chain <chain>', 'chain id or name of the blockchain on which the contract is deployed')
   .option('-d, --did', 'return as a DID')
   .option('-j, --json', 'return as a non-encoded json object')
   .option('-o, --object', 'return as a non-encoded object')
-  .action(function(server, contract, filename, options){
+  .action(function(provider, contract, filename, options){
     try {
-      const id = getContentId(server, contract, filename, options)
+      const id = getContentId(provider, contract, filename, options)
       if (options.did) console.log(id.toDID())
       else if (options.json) console.log(JSON.stringify(id.toObject()))
       else if (options.object) console.log(id.toObject())

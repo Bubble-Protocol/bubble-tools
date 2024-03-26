@@ -27,13 +27,13 @@ bubble wallet create default-key
 ```
 Replace `default-key` with a label of your choice.  This will generate a random private key and set it as the default key.
 
-### Add An Off-Chain Storage Service
+### Add An Off-Chain Storage Provider
 
 For example, to add the Bubble Private Cloud use:
 
 ```
-bubble servers add bubble-cloud https://vault.bubbleprotocol.com/v2/ethereum
-// Replace `ethereum` with any of the supported blockchains or testnets: `polygon`, `avalanche`, `base-goerli` or `sepolia`
+bubble providers add bubble-cloud https://vault.bubbleprotocol.com/v2/polygon
+// Replace `polygon` with any of the supported blockchains or testnets: `ethereum`, `polygon`, `avalanche` or `sepolia`
 ```
 
 ### Configure Your Blockchain Providers
@@ -66,7 +66,7 @@ bubble
   Commands:
     wallet          view and manage your private keys
     addresses       view and manage your address book
-    servers         view and manage your bubble servers
+    providers       view and manage your bubble providers
     content         create and manage off-chain content
     contract        deploy, terminate, transact and call smart contracts
     utils           general utility functions
@@ -115,22 +115,22 @@ bubble contract call address-label myMethod
 
 An address label can be used in place of a filename or part of a filename.  It will be replaced with a 32-byte filename representation of the address (the address prefixed with 12 zero bytes):
 ```
-bubble content read server-label contract-label address-label/hello.txt -v
+bubble content read provider-label contract-label address-label/hello.txt -v
 > [trace] read https://vault.bubbleprotocol.com/v2 0x574242BBAE5a46F444025b8596Cd70A8804ff9dc 0x0000000000000000000000009444C89bF13a5CEd4F4fF3d082e36f080c13F909/hello.txt {}
   hello world
 ```
 
-### Server Address Book
+### Provider Address Book
 
-The server address book holds the API URLs of off-chain storage services.  A server label can be used in place of a url in any command.
+The provider address book holds the API URLs of off-chain storage providers.  A provider label can be used in place of a url in any command.
 ```
-bubble servers list
+bubble providers list
 ```
 
-To add the Bubble Private Cloud use:
+To add the Bubble Private Cloud for the polygon network, for example, use:
 
 ```
-bubble servers add bubble-cloud https://vault.bubbleprotocol.com/v2
+bubble providers add bubble-cloud https://vault.bubbleprotocol.com/v2/polygon
 ```
 
 ### Contract

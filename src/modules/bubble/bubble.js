@@ -140,7 +140,7 @@ function _validateBubble(serverStr, contractStr, options={}) {
   const server = addressBook.parseServer(serverStr);
   let contract = addressBook.parseAddress(contractStr);
   if (options.toLowerCase) contract = contract.toLowerCase();
-  if (!server) throw new Error('invalid server url');
+  if (!server) throw new Error('invalid provider url');
   if (!contract) throw new Error('invalid contract address');
   const key = wallet.getApplicationKey(options.key);
   if (!key) throw new Error('you must connect to your bubble or manually add a key');
