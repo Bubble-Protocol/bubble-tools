@@ -73,7 +73,10 @@ if( process.argv.length < 3 ){ program.outputHelp(); }
 
 function exitWithError(error) {
 	if (program.opts().verbose) console.error(error);
-	else console.error(error.toString());
+	else {
+		if (error.code === -32001) console.error('Error: bubble has been terminated');
+		else console.error(error.toString());
+	}
 	process.exit(1);
 }
 
