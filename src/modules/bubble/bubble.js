@@ -1,5 +1,4 @@
-import { Bubble, bubbleProviders } from '@bubble-protocol/client';
-import { ROOT_PATH, BubbleFilename, ContentId, assert } from '@bubble-protocol/core';
+import { Bubble, bubbleProviders, ROOT_PATH, BubbleFilename, ContentId, assert } from '@bubble-protocol/client';
 import fs from 'fs';
 import wallet from "../wallet/wallet.js";
 import addressBook from "../address-book/address-book.js";

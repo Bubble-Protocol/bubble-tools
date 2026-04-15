@@ -1,5 +1,4 @@
-import { assert } from '@bubble-protocol/core';
-import { ecdsa } from '@bubble-protocol/crypto';
+import { assert, ecdsa } from '@bubble-protocol/client';
 import fs from 'fs';
 import {APP_DIR as CONFIGURED_APP_DIR} from "../../config.js";
 import wallet from "../wallet/wallet.js";

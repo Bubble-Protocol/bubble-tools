@@ -1,4 +1,4 @@
-import { ContentId } from '@bubble-protocol/core';
+import { ContentId } from '@bubble-protocol/client';
 import Web3 from 'web3';
 import { appendBubble, createBubble, deleteBubble, deleteBubbleFile, getContentId, mkdirBubbleFile, listBubbleFile, readBubble, writeBubble, getPermissions } from './bubble.js';
 

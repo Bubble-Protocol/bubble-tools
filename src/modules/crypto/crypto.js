@@ -1,5 +1,4 @@
-import { assert } from '@bubble-protocol/core';
-import { ecdsa } from '@bubble-protocol/crypto';
+import { ecdsa, assert } from '@bubble-protocol/client';
 import Web3 from 'web3';
 import secp256k1 from 'secp256k1';
 import StringUtils from '../../utils/string-utils.js';

@@ -1,6 +1,5 @@
 
-import { assert, BubblePermissions, ROOT_PATH } from '@bubble-protocol/core';
-import { ecdsa } from '@bubble-protocol/crypto';
+import { assert, BubblePermissions, ROOT_PATH, ecdsa } from '@bubble-protocol/client';
 import { Transaction } from 'ethereumjs-tx';
 
 

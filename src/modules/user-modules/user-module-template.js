@@ -10,8 +10,7 @@
  * 
  * The imports object contains:
  * 
- *   core from @bubble-protocol/core
- *   client from @bubble-protocol/client
+ *   bubbleSDK from @bubble-protocol/client
  *   blockchain from src/modules/blockchain/blockchain.js
  *   wallet from src/modules/wallet/wallet.js
  *   addressBook from src/modules/address-book/address-book.js

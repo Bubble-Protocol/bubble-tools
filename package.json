@@ -29,9 +29,7 @@
   },
   "homepage": "https://github.com/Bubble-Protocol/bubble-tools#readme",
   "dependencies": {
-    "@bubble-protocol/client": "^1.0.3",
-    "@bubble-protocol/core": "^0.0.16",
-    "@bubble-protocol/crypto": "^1.0.2",
+    "@bubble-protocol/client": "^1.0.4",
     "bip32": "^2.0.6",
     "commander": "^9.3.0",
     "crypto": "^1.0.1",

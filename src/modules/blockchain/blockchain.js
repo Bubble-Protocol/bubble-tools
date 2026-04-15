@@ -1,4 +1,4 @@
-import { assert, BubblePermissions, ROOT_PATH } from '@bubble-protocol/core';
+import { assert, BubblePermissions, ROOT_PATH } from '@bubble-protocol/client';
 import {getApplicationKey} from "../wallet/wallet.js";
 import addressBook from "../address-book/address-book.js";
 import { readFile } from "../../utils/file-utils.js";
