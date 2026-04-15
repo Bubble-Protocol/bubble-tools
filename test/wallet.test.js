@@ -1,4 +1,3 @@
-import {assert, expect} from 'chai';
 import wallet from '../src/modules/wallet/wallet.js';
 import fs from 'fs';
 import '../src/utils/log.js';
@@ -25,308 +24,291 @@ const TEST_KEYS = {
     publicKey: '',
     address: '0x61f05023348c82b41509ebff37353f1bc8cfa480'
   }
-}
+};
 
 function assertDefaultKeyState() {
   const defaultKey = wallet.getApplicationKey();
-  assert.strictEqual(defaultKey.address, TEST_KEYS.key1.address);
+  expect(defaultKey.address).toBe(TEST_KEYS.key1.address);
   const initialAppKey = wallet.getApplicationKey('initial-application-key');
-  assert.strictEqual(initialAppKey.address, TEST_KEYS.key1.address);
+  expect(initialAppKey.address).toBe(TEST_KEYS.key1.address);
   const key1 = wallet.getApplicationKey('key1');
-  assert.strictEqual(key1.address, TEST_KEYS.key1.address);
+  expect(key1.address).toBe(TEST_KEYS.key1.address);
   const key2 = wallet.getApplicationKey('key2');
-  assert.strictEqual(key2.address, TEST_KEYS.key2.address);
+  expect(key2.address).toBe(TEST_KEYS.key2.address);
   const key3 = wallet.getApplicationKey('key3');
-  assert.strictEqual(key3.address, TEST_KEYS.key3.address);
+  expect(key3.address).toBe(TEST_KEYS.key3.address);
 }
 
 describe('Wallet', () => {
-   
+
   describe('getInfo', () => {
 
     it('decodes a private key correctly', () => {
       const key = wallet.getInfo(TEST_KEYS.key1.privateKey);
-      assert.strictEqual(key.address, TEST_KEYS.key1.address);
-      assert.strictEqual(key.publicKey, TEST_KEYS.key1.publicKey);
-    })
-    
+      expect(key.address).toBe(TEST_KEYS.key1.address);
+      expect(key.publicKey).toBe(TEST_KEYS.key1.publicKey);
+    });
+
     it('decodes a private key prepended with "0x" correctly', () => {
-      const key = wallet.getInfo('0x'+TEST_KEYS.key1.privateKey);
-      assert.strictEqual(key.address, TEST_KEYS.key1.address);
-      assert.strictEqual(key.publicKey, TEST_KEYS.key1.publicKey);
-    })
-    
+      const key = wallet.getInfo('0x' + TEST_KEYS.key1.privateKey);
+      expect(key.address).toBe(TEST_KEYS.key1.address);
+      expect(key.publicKey).toBe(TEST_KEYS.key1.publicKey);
+    });
+
     it('throws an invalid private key error if key is missing', () => {
-      expect(() => {wallet.getInfo()}).to.throw('invalid private key');
-    })
-    
+      expect(() => { wallet.getInfo(); }).toThrow('invalid private key');
+    });
+
     it('throws an invalid private key error if key is invalid', () => {
-      expect(() => {wallet.getInfo('invalid:'+TEST_KEYS.key1.privateKey)}).to.throw('invalid private key');
-    })
-    
-  })
+      expect(() => { wallet.getInfo('invalid:' + TEST_KEYS.key1.privateKey); }).toThrow('invalid private key');
+    });
+
+  });
 
   describe('listKeys', () => {
 
     it('returns empty array if app directory does not exist', () => {
       wallet.testPoint('./non-existent-dir');
       const keys = wallet.listKeys();
-      assert.isArray(keys);
-      assert.strictEqual(keys.length, 0);
-    })
-    
+      expect(Array.isArray(keys)).toBe(true);
+      expect(keys).toHaveLength(0);
+    });
+
     it('returns empty array if wallet directory does not exist', () => {
       const appDir = './test/test-dirs/empty-app-dir';
-      assert(fs.existsSync(appDir), 'appDir does not exist');
+      expect(fs.existsSync(appDir)).toBe(true);
       wallet.testPoint(appDir);
       const keys = wallet.listKeys();
-      assert.isArray(keys);
-      assert.strictEqual(keys.length, 0);
-    })
-    
+      expect(Array.isArray(keys)).toBe(true);
+      expect(keys).toHaveLength(0);
+    });
+
     it('returns empty array if wallet directory is empty', () => {
       const appDir = './test/test-dirs/app-dir-with-empty-wallet';
-      assert(fs.existsSync(appDir), 'appDir does not exist');
+      expect(fs.existsSync(appDir)).toBe(true);
       wallet.testPoint(appDir);
       const keys = wallet.listKeys();
-      assert.isArray(keys);
-      assert.strictEqual(keys.length, 0);
-    })
-    
+      expect(Array.isArray(keys)).toBe(true);
+      expect(keys).toHaveLength(0);
+    });
+
     it('returns empty array if wallet directory is empty and label is given', () => {
       const appDir = './test/test-dirs/app-dir-with-empty-wallet';
-      assert(fs.existsSync(appDir), 'appDir does not exist');
+      expect(fs.existsSync(appDir)).toBe(true);
       wallet.testPoint(appDir);
       const keys = wallet.listKeys('default-key');
-      assert.isArray(keys);
-      assert.strictEqual(keys.length, 0);
-    })
-    
+      expect(Array.isArray(keys)).toBe(true);
+      expect(keys).toHaveLength(0);
+    });
+
     it('returns full wallet contents', () => {
       wallet.testPoint('./test/test-dirs/app-dir');
       const keys = wallet.listKeys();
-      assert.isArray(keys);
-      assert.strictEqual(keys.length, 5);
-      assert.strictEqual(keys[0].address, TEST_KEYS.key1.address); // default-key
-      assert.strictEqual(keys[0].publicKey, TEST_KEYS.key1.publicKey);
-      assert.strictEqual(keys[1].address, TEST_KEYS.key1.address); // initial-application-key
-      assert.strictEqual(keys[1].publicKey, TEST_KEYS.key1.publicKey);
-      assert.strictEqual(keys[2].address, TEST_KEYS.key1.address);
-      assert.strictEqual(keys[2].publicKey, TEST_KEYS.key1.publicKey);
-      assert.strictEqual(keys[3].address, TEST_KEYS.key2.address);
-      assert.strictEqual(keys[3].publicKey, TEST_KEYS.key2.publicKey);
-      assert.strictEqual(keys[4].address, TEST_KEYS.key3.address);
-      assert.strictEqual(keys[4].publicKey, TEST_KEYS.key3.publicKey);
-    })
-    
+      expect(Array.isArray(keys)).toBe(true);
+      expect(keys).toHaveLength(5);
+      expect(keys[0].address).toBe(TEST_KEYS.key1.address);
+      expect(keys[0].publicKey).toBe(TEST_KEYS.key1.publicKey);
+      expect(keys[1].address).toBe(TEST_KEYS.key1.address);
+      expect(keys[1].publicKey).toBe(TEST_KEYS.key1.publicKey);
+      expect(keys[2].address).toBe(TEST_KEYS.key1.address);
+      expect(keys[2].publicKey).toBe(TEST_KEYS.key1.publicKey);
+      expect(keys[3].address).toBe(TEST_KEYS.key2.address);
+      expect(keys[3].publicKey).toBe(TEST_KEYS.key2.publicKey);
+      expect(keys[4].address).toBe(TEST_KEYS.key3.address);
+      expect(keys[4].publicKey).toBe(TEST_KEYS.key3.publicKey);
+    });
+
     it('returns just the requested key', () => {
       wallet.testPoint('./test/test-dirs/app-dir');
       const keys = wallet.listKeys('key1');
-      assert.isArray(keys);
-      assert.strictEqual(keys.length, 1);
-      assert.strictEqual(keys[0].address, TEST_KEYS.key1.address);
-      assert.strictEqual(keys[0].publicKey, TEST_KEYS.key1.publicKey);
-    })
-    
+      expect(Array.isArray(keys)).toBe(true);
+      expect(keys).toHaveLength(1);
+      expect(keys[0].address).toBe(TEST_KEYS.key1.address);
+      expect(keys[0].publicKey).toBe(TEST_KEYS.key1.publicKey);
+    });
+
     it('returns empty array if the requested key does not exist', () => {
       wallet.testPoint('./test/test-dirs/app-dir');
       const keys = wallet.listKeys('key4');
-      assert.isArray(keys);
-      assert.strictEqual(keys.length, 0);
-    })
-    
-  })
+      expect(Array.isArray(keys)).toBe(true);
+      expect(keys).toHaveLength(0);
+    });
+
+  });
 
   describe('Creating, adding, setting & removing keys', () => {
 
     const appDir = './test/test-dirs/app-dir';
     const keyLabel = 'temp-key';
 
-    before(() => {
+    beforeAll(() => {
       wallet.testPoint(appDir);
-    })
+    });
 
     beforeEach(() => {
       assertDefaultKeyState();
-    })
+    });
 
     afterEach(() => {
       assertDefaultKeyState();
-    })
+    });
 
     function runCARTest(createFunction) {
-      // check key does not already exist
-      assert(!wallet.hasApplicationKey(keyLabel), keyLabel+' already exists');
-      assert(!fs.existsSync(appDir+'/wallet/'+keyLabel), keyLabel+' file already exists');
-      // create key and confirm
+      expect(wallet.hasApplicationKey(keyLabel)).toBe(false);
+      expect(fs.existsSync(appDir + '/wallet/' + keyLabel)).toBe(false);
       createFunction();
-      assert(fs.existsSync(appDir+'/wallet/'+keyLabel), keyLabel+' file was not created');
-      assert(wallet.hasApplicationKey(keyLabel), keyLabel+' does not exist');
+      expect(fs.existsSync(appDir + '/wallet/' + keyLabel)).toBe(true);
+      expect(wallet.hasApplicationKey(keyLabel)).toBe(true);
       const key = wallet.getApplicationKey(keyLabel);
-      // check new key is valid and is different from the others
-      assert.match(key.address, /^0x[0-9a-fA-F]{40}$/, 'new key address is invalid');
-      assert.notStrictEqual(key.address, TEST_KEYS.key1.address);
-      assert.notStrictEqual(key.address, TEST_KEYS.key2.address);
-      assert.notStrictEqual(key.address, TEST_KEYS.key3.address);
-      // check the default and initial keys are not affected
+      expect(key.address).toMatch(/^0x[0-9a-fA-F]{40}$/);
+      expect(key.address).not.toBe(TEST_KEYS.key1.address);
+      expect(key.address).not.toBe(TEST_KEYS.key2.address);
+      expect(key.address).not.toBe(TEST_KEYS.key3.address);
       const defaultKey = wallet.getApplicationKey();
-      assert.strictEqual(defaultKey.address, TEST_KEYS.key1.address);
+      expect(defaultKey.address).toBe(TEST_KEYS.key1.address);
       const initialAppKey = wallet.getApplicationKey('initial-application-key');
-      assert.strictEqual(initialAppKey.address, TEST_KEYS.key1.address);
-      // remove key and confirm
+      expect(initialAppKey.address).toBe(TEST_KEYS.key1.address);
       wallet.removeApplicationKey(keyLabel);
-      assert(!wallet.hasApplicationKey(keyLabel), keyLabel+' was not removed');
-      assert(!fs.existsSync(appDir+'/wallet/'+keyLabel), keyLabel+' file was not removed');
+      expect(wallet.hasApplicationKey(keyLabel)).toBe(false);
+      expect(fs.existsSync(appDir + '/wallet/' + keyLabel)).toBe(false);
     }
 
     it('create fails if label is missing and default-key already exists', () => {
       expect(() => {
         wallet.createApplicationKey();
-      })
-      .to.throw();
-    })
-    
+      }).toThrow();
+    });
+
     it('create & remove new random key', () => {
       runCARTest(() => {
         wallet.createApplicationKey(keyLabel);
       });
-    })
-    
+    });
+
     it('add & remove new private key', () => {
       runCARTest(() => {
         wallet.addApplicationKey(keyLabel, TEST_KEYS.tempKey.privateKey);
       });
-    })
-    
+    });
+
     it('add fails if label is missing', () => {
       expect(() => {
         wallet.addApplicationKey(undefined, TEST_KEYS.tempKey.privateKey);
-      })
-      .to.throw();
-    })
-    
+      }).toThrow();
+    });
+
     it('add fails if private key is missing', () => {
       expect(() => {
         wallet.addApplicationKey(keyLabel);
-      })
-      .to.throw();
-    })
-    
+      }).toThrow();
+    });
+
     it('add & remove new private key using the setApplicationKey function', () => {
       runCARTest(() => {
         wallet.setApplicationKey(TEST_KEYS.tempKey.privateKey, keyLabel);
       });
-    })
-    
+    });
+
     it('remove initial-application-key fails', () => {
       expect(() => {
         wallet.removeApplicationKey('initial-application-key');
-      })
-      .to.throw();
-    })
-    
-  })
+      }).toThrow();
+    });
+
+  });
 
   describe('Setting keys', () => {
 
     const appDir = './test/test-dirs/app-dir';
 
-    before(() => {
+    beforeAll(() => {
       wallet.testPoint(appDir);
-    })
-    
+    });
+
     beforeEach(() => {
       assertDefaultKeyState();
-    })
+    });
 
     afterEach(() => {
       assertDefaultKeyState();
-    })
+    });
 
     it('setting with no label fails if default-key already exists and no force option is given', () => {
       expect(() => {
         wallet.setApplicationKey(TEST_KEYS.tempKey.privateKey);
-      })
-      .to.throw();
-    })
-    
+      }).toThrow();
+    });
+
     it('setting default-key fails if it already exists and no force option is given', () => {
       expect(() => {
         wallet.setApplicationKey(TEST_KEYS.tempKey.privateKey, 'default-key');
-      })
-      .to.throw();
-    })
-    
+      }).toThrow();
+    });
+
     it('setting initial-application-key fails when no force option is false', () => {
       expect(() => {
         wallet.setApplicationKey(TEST_KEYS.tempKey.privateKey, 'initial-application-key', false);
-      })
-      .to.throw();
-    })
-    
+      }).toThrow();
+    });
+
     it('setting initial-application-key fails when no force option is true', () => {
       expect(() => {
         wallet.setApplicationKey(TEST_KEYS.tempKey.privateKey, 'initial-application-key', true);
-      })
-      .to.throw();
-    })
-    
+      }).toThrow();
+    });
+
     it('overwriting existing key fails if it already exists and no force option is given', () => {
       expect(() => {
         wallet.setApplicationKey(TEST_KEYS.tempKey.privateKey, 'key1');
-      })
-      .to.throw();
-    })
-    
+      }).toThrow();
+    });
+
     it('overwrite existing key with force option', () => {
       wallet.setApplicationKey(TEST_KEYS.tempKey.privateKey, 'key1', true);
       const key = wallet.getApplicationKey('key1');
-      assert.strictEqual(key.address, TEST_KEYS.tempKey.address);
+      expect(key.address).toBe(TEST_KEYS.tempKey.address);
       wallet.setApplicationKey(TEST_KEYS.key1.privateKey, 'key1', true);
-    })
-    
+    });
+
     it('overwrite default key with force option', () => {
       wallet.setApplicationKey(TEST_KEYS.tempKey.privateKey, 'default-key', true);
       const key = wallet.getApplicationKey();
-      assert.strictEqual(key.address, TEST_KEYS.tempKey.address);
+      expect(key.address).toBe(TEST_KEYS.tempKey.address);
       wallet.setApplicationKey(TEST_KEYS.key1.privateKey, 'default-key', true);
-    })
-    
-  })
+    });
+
+  });
 
   describe('Set/reset default key', () => {
 
     const appDir = './test/test-dirs/app-dir';
 
-    before(() => {
+    beforeAll(() => {
       wallet.testPoint(appDir);
-    })
-    
+    });
+
     beforeEach(() => {
       assertDefaultKeyState();
-    })
+    });
 
     afterEach(() => {
       assertDefaultKeyState();
-    })
+    });
 
     it('setting to key2 succeeds', () => {
       wallet.setDefaultKey('key2');
       const key = wallet.getApplicationKey();
-      assert.strictEqual(key.address, TEST_KEYS.key2.address);
+      expect(key.address).toBe(TEST_KEYS.key2.address);
       wallet.resetDefaultKey();
-    })
-    
+    });
+
     it('fails if label does not exist', () => {
       expect(() => {
         wallet.setDefaultKey('key4');
-      })
-      .to.throw();
-    })
+      }).toThrow();
+    });
 
-  })
-
-
+  });
 
   describe('Startup Scenario', () => {
 
@@ -335,28 +317,28 @@ describe('Wallet', () => {
     it('default and initial-application keys are created automatically when createApplicationKey is called', () => {
       wallet.testPoint(appDir);
       wallet.createApplicationKey();
-      assert(fs.existsSync(appDir), 'appDir was not created');
-      assert(fs.existsSync(appDir+'/wallet'), 'appDir/wallet was not created');
-      assert(fs.existsSync(appDir+'/wallet/initial-application-key'), 'initial-application-key was not created');
-      assert(fs.existsSync(appDir+'/wallet/default-key'), 'default-key was not created');
+      expect(fs.existsSync(appDir)).toBe(true);
+      expect(fs.existsSync(appDir + '/wallet')).toBe(true);
+      expect(fs.existsSync(appDir + '/wallet/initial-application-key')).toBe(true);
+      expect(fs.existsSync(appDir + '/wallet/default-key')).toBe(true);
       const keys = wallet.listKeys();
-      assert.isArray(keys);
-      assert.strictEqual(keys.length, 2);
-      assert.strictEqual(keys[0].label, 'default-key');
-      assert.strictEqual(keys[1].label, 'initial-application-key');
+      expect(Array.isArray(keys)).toBe(true);
+      expect(keys).toHaveLength(2);
+      expect(keys[0].label).toBe('default-key');
+      expect(keys[1].label).toBe('initial-application-key');
       const key = wallet.getApplicationKey();
-      assert.isObject(key);
-      assert.match(key.address, /^0x[0-9a-fA-F]{40}$/, 'key address is invalid');
+      expect(typeof key).toBe('object');
+      expect(key.address).toMatch(/^0x[0-9a-fA-F]{40}$/);
       const initialAppKey = wallet.getApplicationKey('initial-application-key');
-      assert.strictEqual(initialAppKey.address, key.address, "addresses don't match");
-      assert.deepEqual(initialAppKey.publicKey, key.publicKey, "public keys don't match");
-    })
+      expect(initialAppKey.address).toBe(key.address);
+      expect(initialAppKey.publicKey).toEqual(key.publicKey);
+    });
 
-    afterEach( () => {
+    afterEach(() => {
       fs.rmSync(appDir, {recursive: true, force: true});
-      assert(!fs.existsSync(appDir), 'failed to remove appDir');
-    })
-    
-  })
+      expect(fs.existsSync(appDir)).toBe(false);
+    });
+
+  });
 
 });
